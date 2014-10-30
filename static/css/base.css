@@ -1,0 +1,118 @@
+/*base.css*/
+
+html,
+body {
+  height: 100%;
+  background: #fff !important;
+  padding: 15px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+}
+
+ul {
+  list-style-type: none;
+}
+#filter_reset_btn {
+  background-color: #B2D1B2;
+  color: #000;
+  display: none;
+}
+
+.mapped_collection {
+/*  padding: 10px;
+  margin: 5px;*/
+}
+
+.mapped_collection h3 {
+  width: 100%;
+}
+
+.mapped_record_selector, .mapped_language_selector {
+  cursor: pointer;
+  margin: 10px;
+  background-color: #7A7A7B;
+  color: white;
+  padding: 5px;
+}
+
+.map_record_selected {
+  background-color: #6E8C6E;
+}
+
+.mapped_language_selector {
+  /*margin: 0 5px 0 5px;*/
+}
+
+.map_language_selected {
+  background-color: #6E8C6E;
+}
+
+.navbar-fixed-top {
+  height: 120px;
+  background: #fff;
+}
+
+#footer {
+  text-align: center;
+  /*padding-top: 30px;*/
+}
+
+/*Colors*/
+.clr-collection { background-color: #143D29 }
+.clr-language { background-color: #143D29 }
+.clr-contributor { background-color: #143D29 }
+
+/******************************** Box Borders **********************************************/
+.row .my-inner {
+  padding: 5px;
+  margin: 10px 1px 1px 1px;
+}
+
+.list-group-item.hilite_row {
+  background-color: #B2D1B2
+}
+
+#search {
+  border: 1px solid black;
+  padding: 1px;
+  margin: 10px;
+}
+/******************************** End Box Borders **********************************************/
+
+/******************************** Map and Table **********************************************/
+#map-canvas{
+    /*text-align: center;*/
+    background-color: lightgrey;
+    float: right;
+    /*margin: 0 auto;*/
+    width: 100%;
+    height: 480px;
+    /*border :solid 2px black;*/
+    /*padding: 3px;*/
+    /*border-radius:8px;*/
+}
+#table{
+  /*float: left;*/
+  margin: 0 auto;
+  width: 600px;
+}
+
+#nogeotext{
+    border :solid 2px black;
+    padding: 3px;
+    /*border-radius:8px;*/
+    font-size: 20px;
+}
+/******************************** End Map and table **********************************************/
+
+/******************************** Search UI box **************************************************/
+.searchBox {
+  line-height:200%;
+}
+
+.searchBox li {
+  list-style-type: none;
+}
+/******************************** End Search UI box **********************************************/

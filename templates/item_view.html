@@ -1,0 +1,18 @@
+<!-- item_view.html -->
+{% extends 'base.html' %}
+
+{% block page_header %}<small>{{ object }}</small>{% endblock page_header %}
+
+{% block content %}
+	{% for k,v in item_data.items %}
+		<h5>
+			<i>{{ k }}</i>: 
+			{%for i in v %}	
+				<span><b>
+					{% if k == 'identifier' %} {{ i|urlize }} {% else %} {{ i }} {% endif %}
+					{% if not forloop.last %};{% endif %}
+				</b></span> 
+			{% endfor %}
+		</h5>
+	{% endfor %}		
+{% endblock content %}

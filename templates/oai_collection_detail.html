@@ -1,0 +1,40 @@
+<!-- collection_detail.html -->
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block page_title %}Collections{% endblock page_title %}
+
+{% block page_header %} Collection {% endblock page_header %}
+
+{% block content %}
+	
+	{% if messages %}
+	    {% for message in messages %}
+	    <h5{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+	    {% endfor %}
+	{% endif %}
+
+	<h2> {{ object.name }}
+		<small><a href="{% url 'oai_collection_edit' object.identifier %}">edit</a></small>
+		<small><a href="{% url 'oai_collection_delete' object.identifier %}">remove</a></small>
+	</h2>
+	<h3><a href="{% url 'oai_harvest_collection' object.identifier %}">harvest</a></h3>
+	<h5> OAI Identifier: {{ object.identifier }}</h5>
+	<h5> Community: {{ object.community }}</h5>
+	<h5> Number of records harvested: {{ num_records }}</h5>
+	<h5> Created on: {{ object.created }}</h5>
+	<h5> Modified on: {{ object.modified }}</h5>
+
+	
+	{% for i in records %}
+	<h3><small>{{ i }} -> {{i.modified}} </small></h3>
+		<div>
+			{% if i.hdr_datestamp > i.modified %} <h3>Out of date</h3> {% endif %}
+			<h5> Updated on: {{ i.hdr_datestamp }}</h5>
+			<h4> Last Harvested on: {{ i.modified }}</h4>
+		</div>
+		{% for j in i.metadata_items %}
+			<div>{{ j }}</div>
+		{% endfor %}
+	{% endfor %}
+{% endblock content %}

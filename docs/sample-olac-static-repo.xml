@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Repository xmlns="http://www.openarchives.org/OAI/2.0/static-repository" 
+            xmlns:oai="http://www.openarchives.org/OAI/2.0/" 
+            xmlns:olac="http://www.language-archives.org/OLAC/1.1/"
+            xmlns:dc="http://purl.org/dc/elements/1.1/"
+            xmlns:dcterms="http://purl.org/dc/terms/"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+            xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/static-repository 
+            http://www.language-archives.org/OLAC/1.1/static-repository.xsd
+                http://www.language-archives.org/OLAC/1.1/
+                http://www.language-archives.org/OLAC/1.1/olac.xsd
+                http://purl.org/dc/elements/1.1/
+                http://dublincore.org/schemas/xmls/qdc/2006/01/06/dc.xsd
+                http://purl.org/dc/terms/
+                http://dublincore.org/schemas/xmls/qdc/2006/01/06/dcterms.xsd">
+
+  <!-- This document is valid according to both of the following schemas:
+       http://www.openarchives.org/OAI/2.0/static-repository.xsd
+       http://www.language-archives.org/OLAC/1.1/static-repository.xsd
+  -->
+
+
+  <Identify>
+    <repositoryName>Kaipuleohone</repositoryName>
+    <baseURL>http://scholarspace.manoa.hawaii.edu/Kaipuleohone.xml</baseURL>
+    <protocolVersion>2.0</protocolVersion>
+    <adminEmail>betht@hawaii.edu</adminEmail>
+    <earliestDatestamp>2006-01-01</earliestDatestamp>
+    <deletedRecord>no</deletedRecord>
+    <granularity>YYYY-MM-DD</granularity>
+    <description> 
+      <oai-identifier
+        xmlns="http://www.openarchives.org/OAI/2.0/oai-identifier"
+        xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai-identifier
+          http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">
+        <scheme>oai</scheme>
+        <repositoryIdentifier>scholarspace.manoa.hawaii.edu</repositoryIdentifier>
+        <delimiter>:</delimiter>
+        <sampleIdentifier>oai:scholarspace.manoa.hawaii.edu:10125/4670</sampleIdentifier>
+      </oai-identifier>
+    </description>
+    <description>
+      <olac-archive
+        type="institutional"
+        currentAsOf="2014-10-22"
+        xmlns="http://www.language-archives.org/OLAC/1.1/olac-archive"
+        xsi:schemaLocation="http://www.language-archives.org/OLAC/1.1/olac-archive
+           http://www.language-archives.org/OLAC/1.1/olac-archive.xsd">
+        <archiveURL>http://scholarspace.manoa.hawaii.edu/handle/10125/4250/</archiveURL>
+        <participant name="Beth Tillinghast" role="ScholarSpace Project Manager" email="betht@hawaii.edu"/>
+        <participant name="Andrea Berez" role="Archive Manager" email="andrea.berez@gmail.com"/>
+        <participant name="Daniel Ishimitsu" role="Database Administrator" email="daniel20@hawaii.edu"/>
+        <institution>University of Hawaii at Manoa</institution>
+        <institutionURL>http://www.hawaii.edu/</institutionURL>
+         <shortLocation>Honolulu, USA</shortLocation>
+        <location>Hamilton Library, University of Hawaii at Manoa, Honolulu, Hawaii 96822, U.S.A.</location>
+        <synopsis>Kaipuleohone is a digital ethnographic archive for audio and video recordings as well as photographs, notes, dictionaries, transcriptions, and other materials related to small and endangered languages. The archive was established by the Department of Linguistics at the University of Hawai'i to ensure that priceless and unique research recordings will be digitized, described and safely housed in the longterm. Kaipuleohone conforms to international archiving standards for digital archives. Audio files are stored at high resolution and the metadata conforms to the Open Language Archives Community and Dublin Core. All digital files are curated by the Library system at the University of Hawai'i's DSpace repository, ScholarSpace. Every item in the collection has access conditions specified by the depositor on the deposit form. Kaipuleohone means a 'gourd of sweet words' and we are very grateful to Laiana Wong for suggesting this name and for allowing us to use it as the name of this archive.</synopsis>
+        <access>Most material is free to access by the public.  Certain documents are
+          restricted to persons associated with the University of Hawaii and are 
+          password protected.</access>
+        <archivalSubmissionPolicy>ScholarSpace at the University of Hawaii at Manoa 
+           accepts submissions of scholarly material from all members of the UH 
+           community. Submitters must first get permission from the administrators by
+           contacting us at micro@hawaii.edu
+        </archivalSubmissionPolicy>
+      </olac-archive>
+    </description>
+  </Identify>
+    
+  <ListMetadataFormats>
+    
+    <oai:metadataFormat>
+    	<oai:metadataPrefix>olac</oai:metadataPrefix>
+    	<oai:schema>http://www.language-archives.org/OLAC/1.1/olac.xsd</oai:schema>
+    	<oai:metadataNamespace>http://www.language-archives.org/OLAC/1.1/ </oai:metadataNamespace>
+    </oai:metadataFormat>
+    
+  </ListMetadataFormats>
+    
+  <ListRecords metadataPrefix="olac">
+    <oai:record>
+      <oai:header>
+        <oai:identifier>oai:kayardild.lt.cs.mu.oz.au:01</oai:identifier>
+        <oai:datestamp>2004-07-06</oai:datestamp>
+      </oai:header>
+      <oai:metadata>
+        <olac:olac>
+          <dc:title>A grammar of Kayardild. With comparative notes on Tangkic.</dc:title>
+          <dc:creator>Evans, Nicholas D.</dc:creator>
+          <dc:subject>Kayardild grammar</dc:subject>
+           <dc:subject xsi:type="olac:language" olac:code="gyd"/>
+           <dc:subject xsi:type="olac:linguistic-field" olac:code="syntax"/>
+           <dc:subject xsi:type="olac:discourse-type" olac:code="narrative"/>
+          <dc:language xsi:type="olac:language" olac:code="eng"/>
+          <dc:description>Kayardild Grammar (ISBN 3110127954)</dc:description>
+          <dc:publisher>Berlin - Mouton de Gruyter</dc:publisher>
+          <dc:contributor xsi:type="olac:role" olac:code="author">Nicholas Evans</dc:contributor>
+          <dc:format>hardcover, 837 pages</dc:format>
+          <dc:relation>related to ISBN 0646119966</dc:relation>
+          <dc:coverage>Australia</dc:coverage>
+           <dc:type xsi:type="olac:linguistic-type" olac:code="language_description"/>
+           <dc:type xsi:type="dcterms:DCMIType">Text</dc:type>
+        </olac:olac>
+      </oai:metadata>
+    </oai:record>
+          
+    <oai:record>
+      <oai:header>
+        <oai:identifier>oai:kayardild.lt.cs.mu.oz.au:02</oai:identifier>
+        <oai:datestamp>2004-07-06</oai:datestamp>
+      </oai:header>
+      <oai:metadata>
+        <olac:olac>
+          <dc:title>Kayardild dictionary and thesaurus : a vocabulary of the language of the Bentinck Islanders, North-West Queensland </dc:title>
+          <dc:creator>Nicholas Evans</dc:creator>
+          <dc:subject>Kayardild dictionary and thesaurus</dc:subject>
+          <dc:subject xsi:type="olac:language" olac:code="gyd"/>
+          <dc:description>Kayardild dictionary and thesaurus (ISBN 0646119966) </dc:description>
+          <dc:publisher>Parkville, Vic., Australia. University of Melbourne, Dept. of Linguistics and Language Studies.</dc:publisher>
+          <dc:contributor xsi:type="olac:role" olac:code="researcher">Nicholas Evans</dc:contributor>
+          <dc:contributor xsi:type="olac:role" olac:code="researcher">Penny Johnson</dc:contributor>
+          <dc:contributor xsi:type="olac:role" olac:code="researcher">Marbuk Kohler</dc:contributor>
+          <dc:contributor xsi:type="olac:role" olac:code="researcher">Ken Hale</dc:contributor>
+          <dc:format>format: xiv, 334 p. : ill. ; 24 cm</dc:format>
+          <dc:relation>related to ISBN 3110127954</dc:relation>
+          <dc:coverage>Australia</dc:coverage>
+        </olac:olac>
+      </oai:metadata>
+    </oai:record>
+    <oai:record>
+      <oai:header>
+        <oai:identifier>oai:scholarspace.manoa.hawaii.edu:10125/32515</oai:identifier>
+        <oai:datestamp>2014-02-21</oai:datestamp>
+       <oai:setSpec>col_10125_32448</oai:setSpec>
+      </oai:header>
+      <oai:metadata>
+        <olac:olac>
+          <dcterms:tableOfContents>EB1-066.mp3</dcterms:tableOfContents>
+          <dcterms:tableOfContents>EB1-066.wav</dcterms:tableOfContents>
+          <dcterms:bibliographicCitation>Ierago, Rayme, Berg, Esther, Berg, Esther, Berg, Esther; 2013-10-14; Words with geminate consonants; digital wav file recorded at 44.1 kHz/16 bit on Zoom H2N; Kaipuleohone University of Hawai'i Digital Language Archive;http://hdl.handle.net/10125/32515.</dcterms:bibliographicCitation>          <dc:contributor xsi:type="olac:role" olac:code="speaker">Ierago, Rayme</dc:contributor>
+          <dc:contributor xsi:type="olac:role" olac:code="recorder">Berg, Esther</dc:contributor>
+          <dc:contributor xsi:type="olac:role" olac:code="researcher">Berg, Esther</dc:contributor>
+          <dc:contributor xsi:type="olac:role" olac:code="depositor">Berg, Esther</dc:contributor>
+          <dcterms:spatial xsi:type="dcterms:Point">north=7.4278; east=134.5495</dcterms:spatial>
+          <dc:coverage xsi:type="dcterms:ISO3166">PW</dc:coverage>
+          <dc:coverage xsi:type="dcterms:ISO3166">PW</dc:coverage>
+          <dc:date xsi:type="dcterms:W3CDTF">2013-10-14</dc:date>
+          <dc:description>Words with geminate consonants</dc:description>
+          <dc:description>Region: Echang, Koror, Palau</dc:description>
+          <dc:format>digital wav file recorded at 44.1 kHz/16 bit on Zoom H2N</dc:format>
+          <dc:format>00:05:34</dc:format>
+          <dc:identifier xsi:type="dcterms:URI">http://hdl.handle.net/10125/32515</dc:identifier>
+          <dc:language xsi:type="olac:language" olac:code="sov"/>
+          <dc:language xsi:type="olac:language" olac:code="eng"/>
+          <dc:subject xsi:type="olac:language" olac:code="sov" />
+          <dc:title>EB1-066</dc:title>
+          <dc:type xsi:type="olac:linguistic-type" olac:code="language_description"/>
+          <dc:type xsi:type="olac:linguistic-type" olac:code="lexicon"/>
+          <dc:type xsi:type="dcterms:DCMIType">sound</dc:type>
+       </olac:olac>
+     </oai:metadata>
+   </oai:record>
+            
+  </ListRecords>
+</Repository>
+

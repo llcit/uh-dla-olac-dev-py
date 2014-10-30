@@ -1,0 +1,48 @@
+<!-- olac_repository.html -->
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block page_title %}Repositories{% endblock page_title %}
+
+{% block content %}
+
+	{% if messages %}
+	    {% for message in messages %}
+	    <h5{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h5>
+	    {% endfor %}
+	{% endif %}
+	<h2> NAME: {{ object.name }}<h2>
+	<h3><small>{{ object.base_url }}</small></h3>
+	<h3><small>{{ object.participants }}</small></h3>
+
+	{% for k, v in info.items %}
+		<h6>{{ k }}: {{ v }}</h6>
+	{% endfor %}
+
+	
+
+
+
+	{% comment %}
+	{% for i in communities %}		
+		<h3>
+			<a href="{{ i.get_absolute_url }}">{{ i.name }}</a>
+			<small> {{ i.identifier }} </small>
+			<small>
+				<small><a href="{% url 'oai_community_edit' i.identifier %}">edit</a></small>
+				<small><a href="{% url 'oai_community_delete' i.identifier %}">remove</a></small>
+			</small>
+		</h3>
+		{% for j in i.list_collections %}
+			<h5>
+				<small><a href="{% url 'oai_collection_edit' j.identifier %}">edit</a></small>
+				<small><a href="{% url 'oai_collection_delete' j.identifier %}">remove</a></small>
+				<small><a href="{% url 'oai_harvest_collection' j.identifier %}">manage</a></small>
+				{{ j.name }}
+				<small> {{ j.identifier }} </small>
+			</h5>
+		{% endfor %}
+	{% endfor %}
+	{% endcomment %}
+
+{% endblock content %}

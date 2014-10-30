@@ -1,0 +1,4 @@
+# requirements/prod.txt
+# run pip install -r requirements/prod.txt to load production level requirements. 
+# Probably need sudo privs for this -- NOT FOR installations for virtual envs.
+-r base.txt

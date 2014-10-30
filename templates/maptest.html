@@ -1,0 +1,73 @@
+<!-- maptest.html -->
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block page_header %}{% endblock page_header %}
+
+{% block content %}
+
+	<div class="row">
+		<div class="col-md-12">
+			<h2>Globe Trekker</h2>	
+		</div>
+
+		<!-- Google Map display panel -->
+		<div class="col-md-6"><div id="map-canvas"></div></div>
+
+		<!-- Google Map view controller -->
+		<div id="mapped_records_selector" class="col-md-6">
+			
+			<!-- Mapped languages selector: filters mapped record selectors -->
+			<div class="row">
+				<div class="col-md-12"><button id="filter_reset_btn" type="button" class="btn">Show All</button></div>
+				
+				<div class="col-md-12">
+				{% for i in unique_languages %}
+					<div class="mapped_language_selector" style="padding: 5px; font-color: black; float: left;">{{ i }}</div>
+				{% endfor %}
+				</div>	
+			</div>
+			
+			<!-- Mapped record selector: displays infowindow for record in google map -->
+			<div class="mapitem_container mapped_collection">
+				
+				{% for i in mapped_records %} 
+				 	{% ifchanged i.collection.0 %}<h3 class="collection_title stamp">{{ i.collection.0 }}</h3>{% endifchanged %}
+					<div class="mapped_record_selector 
+						 coord{{ i.coverage_lat.0|cut:'.'|slice:":6" }}_{{ i.coverage_lng.0|cut:'.'|slice:":6" }}
+						 {% for j in i.language %} {{ j }} {% endfor %}
+						 ">
+						{{ i.title.0 }}
+						<input class="title" type="hidden" name="title" value="{{ i.title.0 }}">
+						<input class="language" type="hidden" name="language" value="{% for j in i.language %} {{ j }} {% endfor %}">
+						<input class="latitude" type="hidden" name="latitude" value="{{ i.coverage_lat.0 }}">
+						<input class="longitude" type="hidden" name="longitude" value="{{ i.coverage_lng.0 }}">
+						<input class="collection" type="hidden" name="collection" value="{{ i.collection.0 }}">
+						<input class="site_url" type="hidden" name="site_url" value="{{ i.site_url.0 }}">
+					</div>			
+				{% endfor %}
+				
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+
+{% block js_script %}
+	<script type="text/javascript">
+		//Get the coordinates info and data from the records inside the DOM
+        var json = {{ unique_coords|safe }};
+    </script>
+{% endblock js_script %}
+
+{% block js_include %}
+
+	<!--External js libraries-->
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    
+    <!--Internal js files-->
+    
+    <script src="{% static 'js/dla.js' %}"></script>
+    
+{% endblock js_include %}

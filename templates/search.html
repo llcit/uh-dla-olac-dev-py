@@ -1,0 +1,113 @@
+<!-- search.html -->
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block page_header %}<!--<small>{{ object }}</small>-->{% endblock page_header %}
+
+{% block content %}
+<div class="row">
+		<div class="col-md-12 my-inner">
+			<div class="panel panel-default">
+				<div class="panel-heading searchUI-heading"><h4>Showing 10 out of {{len}} results for {{query}}: {{key}}</h4></div>
+				<ul class="nav nav-pills nav-justified">
+				  <li class="previous disabled"><a>&larr; Previous</a></li>
+				  <li class="dropdown">
+				  	<a class="dropdown-toggle" data-toggle="dropdown" href="#">Sort by <span class="caret"></span> </a>
+				  	<ul class="dropdown-menu" role="menu">
+					  	<li><a href="">Title</a></li>
+		                <li><a href="">Date</a></li>
+		                <li><a href="">Contributor</a></li>
+		                <li><a href="">Coverage</a></li>
+		                <li><a href="">Language</a></li>
+				  	</ul>
+				  </li>
+				  <li class="dropdown">
+				  	<a class="dropdown-toggle" data-toggle="dropdown" href="#">Order <span class="caret"></span> </a>
+				  	<ul class="dropdown-menu" role="menu">
+					  	<li><a href="">Ascending</a></li>
+		                <li><a href="">Descending</a></li>
+				  	</ul>
+				  </li>
+				  <li class="dropdown">
+				  	<a class="dropdown-toggle" data-toggle="dropdown" href="#">Number of results <span class="caret"></span> </a>
+				  	<ul class="dropdown-menu pivotElement" role="menu">
+					  	<li id="pivot10"><a>10</a></li>
+		                <li id="pivot20"><a>20</a></li>
+		                <li id="pivot30"><a>30</a></li>
+		                <li id="pivot50"><a>50</a></li>
+		                <li id="pivotAll"><a>All</a></li>
+				  	</ul>
+				  </li>
+				  <li class="next"><a>Next &rarr;</a></li>
+				</ul>
+				<div class="searchBox">
+					{% for i in items %}
+							<div class="panel panel-default">
+							    <div class="panel-heading">
+							      <h4 class="panel-title">
+							        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne{{forloop.counter0}}">
+							          <h5>{{forloop.counter}} {{ i }}</h5>
+							        </a>
+							      </h4>
+							    </div>
+							    <div id="collapseOne{{forloop.counter0}}" class="panel-collapse collapse">
+							      <div class="panel-body">
+							        <ul>
+							 			<li><a href="{{ i.get_absolute_url }}"> Record URL {{forloop.revcounter}} </a></li>
+										{% for key, values in i.metadata_items_json.items %}
+											<li>{{key}}: {{values}} </li>
+										{% endfor %}
+									</ul>
+							      </div>
+							    </div>
+							  </div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-1"></div>
+	<div class="col-md-10">
+		<h3>Filters</h3>
+		<h4>Use Filters to refine the search results</h4>
+		<div class="panel panel-default">
+			<div class="panel-heading current"><h4>Current Filters</h4></div>
+			<button type="button" class="btn btn-default btn-lg">Language Contains <b>"{{query}}"</b>
+			<span class="glyphicon glyphicon-remove"></span></button>
+		</div>
+
+		<div class="panel panel-default">
+			<div class="panel-heading"><h4>Add New Filters</h4></div>
+			<ul class="nav nav-pills nav-justified">
+			  <li class="dropdown">
+			  	<select class="form-control" id='query'>
+				    <option value="title">Title</option>
+				    <option value="date">Date</option>
+				    <option value="contributor">Contributor</option>
+				    <option value="coverage">Coverage</option>
+				    <option value="language">Language</option>
+				</select>
+			  </li>
+			  <li class="dropdown">
+			  	<select class="form-control" id='type'>
+				    <option value="is">Is</option>
+				    <option value="contains">Contains</option>
+				</select>
+			  </li>
+			  <li id="filter"><a href="#">Add Filter</a></li>
+			  <input id="keyword" type="text" class="form-control" placeholder="Add keyword">
+			</ul>
+		</div>
+
+	</div>
+</div>		
+{% endblock content %}
+
+{% block js_include %}
+    <!--Internal js files-->
+     <script src="{% static 'js/search.js' %}"></script>
+{% endblock js_include %}

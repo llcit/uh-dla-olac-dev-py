@@ -1,0 +1,176 @@
+<!-- index.html -->
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block page_header %}{% endblock page_header %}
+
+{% block content %}
+	
+	<div class="row">
+		<div class="col-md-12">
+		
+			<h4>Kaipuleohone is the University of Hawai'i's digital ethnographic archive for audio and video recordings as well as notes, dictionaries, transcriptions, and other materials related to small and endangered languages.</h4>
+
+			<p>Kaipuleohone means a <i>'gourd of sweet words'</i> and represents the notion of a collection of language material that would otherwise be unlocatable in personal collections.</p>
+		
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-12">
+			<!-- <h2>Globe Trekker</h2>	 -->
+		</div>
+
+		<!-- Google Map display panel -->
+		<div class="col-md-6"><div id="map-canvas"></div></div>
+
+		<!-- Google Map view controller -->
+		<div id="mapped_records_selector" class="col-md-6">
+			
+			<!-- Mapped languages selector: filters mapped record selectors -->
+			<div class="row">
+				<div class="col-md-12"><button id="filter_reset_btn" type="button" class="btn">Show All</button></div>
+				
+				<div class="col-md-12">
+				{% for i in mapped_languages %}
+					<div class="mapped_language_selector" style="padding: 5px; font-color: black; float: left;">{{ i }}</div>
+				{% endfor %}
+				</div>	
+			</div>
+			
+			<!-- Mapped record selector: displays infowindow for record in google map -->
+			<div class="mapitem_container mapped_collection">
+				
+				{% for i in mapped_records %} 
+				 	{% ifchanged i.collection.0 %}<h3 class="collection_title stamp">{{ i.collection.0 }}</h3>{% endifchanged %}
+					<div class="mapped_record_selector 
+						 coord{{ i.coverage_lat.0|cut:'.'|slice:":6" }}_{{ i.coverage_lng.0|cut:'.'|slice:":6" }}
+						 {% for j in i.language %} {{ j }} {% endfor %}
+						 ">
+						{{ i.title.0 }}
+						<input class="title" type="hidden" name="title" value="{{ i.title.0 }}">
+						<input class="language" type="hidden" name="language" value="{% for j in i.language %} {{ j }} {% endfor %}">
+						<input class="latitude" type="hidden" name="latitude" value="{{ i.coverage_lat.0 }}">
+						<input class="longitude" type="hidden" name="longitude" value="{{ i.coverage_lng.0 }}">
+						<input class="collection" type="hidden" name="collection" value="{{ i.collection.0 }}">
+						<input class="site_url" type="hidden" name="site_url" value="{{ i.site_url.0 }}">
+					</div>			
+				{% endfor %}
+				
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<!-- <div class="col-md-1"></div> -->
+		<!-- <div class="col-md-12">
+			<div class="panel panel-default my-inner">
+				<div class="panel-heading"><h4>Search in Database</h4></div>
+				<form action="{% url "search" %}" method="POST">{% csrf_token %}
+					<ul class="nav nav-pills nav-justified">
+					  <li class="dropdown">
+					  	<select name='query' class="form-control" id='query'>
+					  		<option selected="selected" disabled>Metadata Element</option>
+						    <option value="title">Title</option>
+						    <option value="date">Date</option>
+						    <option value="depositor">Depositor</option>
+						    <option value="coverage">Coverage</option>
+						    <option value="language">Language</option>
+						</select>
+					  </li>
+					  <li class="dropdown">
+					  	<select name='type' class="form-control" id='type'>
+					  		<option selected="selected" disabled>Query Type</option>
+						    <option value="is">Is</option>
+						    <option value="contains">Contains</option>
+						</select>
+					  </li>
+					  <li id="filter"><button type="submit" class="btn btn-default">Search Kaipuleohone</button></li>
+					  <input id="key" name="key" type="text" class="form-control" placeholder="Add keyword">
+					</ul>
+				</form>
+			</div>
+		</div> -->
+	</div>
+
+	</div>
+	<div class="row browse">
+		<div class="col-md-4">
+			<div class="panel panel-default" id="collection">
+				<div class="panel-heading"><center><h3>Collections</h3></center></div>
+				<div class="list-group">
+					{% for collection in collections %}
+  						<a href="{{ collection.get_absolute_url }}" class="list-group-item">
+    						<span class="badge clr-collection">{{ collection.count_records }}</span>
+    						<span>{{ collection }}</span>
+  						</a>
+  					{% endfor %}
+  				</div>
+  				<ul class="pager">
+				  <li class="previous disabled" id="prev_col"><a class="collection">&larr; Previous</a></li>
+				  <li class="next" id="next_col"><a class="collection">Next &rarr;</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-default"  id="language">
+				<div class="panel-heading"><center><h3>Languages</h3></center></div>
+				<div class="list-group">
+  					{% for language in languages %}
+  						<a href="{% url 'language' language.0 %}" class="list-group-item">
+    						<span class="badge clr-language">{{language.1 }}</span>
+    						<span>{{ language.0 }}</span>
+  						</a>
+  					{% endfor %}
+  				</div>
+  				<ul class="pager">
+				  <li class="previous disabled" id="prev_lan"><a class="language" >&larr; Previous</a></li>
+				  <li class="next" id="next_lan"><a  class="language" >Next &rarr;</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-default"  id="depositor">
+				<div class="panel-heading"><center><h3>Contributors</h3></center></div>
+				<div class="list-group">
+  					{% for contributor in contributors %}
+  						<a href="{% url 'contributor' contributor.0|slugify %}" class="list-group-item">
+    						<span class="badge clr-contributor">{{contributor.1}}</span>
+    						<span>{{ contributor.0 }}</span>
+  						</a>
+  					{% endfor %}
+  				</div>
+  				<ul class="pager">
+					<li class="previous disabled" id="prev_dep"><a class="depositor">&larr; Previous</a></li>
+					<li class="next" id="next_dep"><a class="depositor">Next &rarr;</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	
+	<!-- <h4> <a href="{% url 'community' default.identifier %}"> {{ default }}</a>  </h4>
+	
+	<h3> Other communities:</h3>
+	{% for i in communities %}
+		<h6> <a href="{% url 'community' i.identifier %}"> {{ i }}</a>  </h6>
+	{% endfor %} -->
+	
+{% endblock content %}
+
+{% block js_script %}
+	<script type="text/javascript">
+		//Get the coordinates info and data from the records inside the DOM
+        var json = {{ mapped_plots|safe }};
+    </script>
+{% endblock js_script %} 
+  
+{% block js_include %} 
+  <!--Google Map js libraries-->
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script> 
+
+  <!-- Local js -->
+  <script src="{% static 'js/dla.js' %}"></script>
+{% endblock js_include %}			
+
