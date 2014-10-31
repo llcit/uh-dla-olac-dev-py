@@ -49,15 +49,11 @@ class HomeView(MapDataMixin, TemplateView):
 
         ######################## Preparing context to render in template ######
         context = super(HomeView, self).get_context_data(**kwargs)
-        context['communities'] = Community.objects.all()
         context['collections'] = Collection.objects.all().order_by('name')
         context['languages'] = sorted(
             language_frequencies.iteritems(), key=operator.itemgetter(1), reverse=True)
         context['contributors'] = sorted(
             contributor_frequencies.iteritems(), key=operator.itemgetter(1), reverse=True)
-        context['default'] = get_object_or_404(
-            Community, identifier='com_10125_4250')
-
         # context['mapped_records'] = sorted(
         #     mapped_records, key=operator.itemgetter('collection'))
         # context['mapped_plots'] = unicode(mapped_plots)
@@ -180,7 +176,7 @@ class RepositoryView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(RepositoryView, self).get_context_data(**kwargs)
-        context['info'] = self.get_object().__dict__
+        context['info'] = json.loads(self.get_object().info_list)
         return context
 
 class RepositoryCreateView(CreateView):

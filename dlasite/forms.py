@@ -25,7 +25,7 @@ class CreateRepositoryForm(ModelForm):
                     cleaned_data['name'] = i.data
                 
                 d = {}
-                d[i.fieldname] = i.datalist
+                d[i.fieldname] = i.data
                 info.append(d)
 
             cleaned_data['info'] = json.dumps(info)
