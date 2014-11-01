@@ -13,12 +13,24 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name='ArchiveMetadataElement',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('element_type', models.CharField(max_length=256)),
+                ('element_data', models.TextField(default=b'')),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
             name='Collection',
             fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, verbose_name='created', editable=False)),
                 ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
-                ('identifier', models.CharField(max_length=256, serialize=False, primary_key=True)),
-                ('name', models.CharField(max_length=256, blank=True)),
+                ('identifier', models.CharField(unique=True, max_length=256)),
+                ('name', models.CharField(max_length=256, null=True, blank=True)),
             ],
             options={
                 'abstract': False,
@@ -43,8 +55,8 @@ class Migration(migrations.Migration):
                 ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, verbose_name='created', editable=False)),
                 ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
                 ('identifier', models.CharField(unique=True, max_length=256)),
-                ('datestamp', models.DateTimeField()),
-                ('set_spec', models.ForeignKey(to='olacharvests.Collection')),
+                ('datestamp', models.CharField(max_length=48)),
+                ('set_spec', models.ForeignKey(blank=True, to='olacharvests.Collection', null=True)),
             ],
             options={
                 'abstract': False,
@@ -57,18 +69,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, verbose_name='created', editable=False)),
                 ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
-                ('name', models.CharField(max_length=256)),
-                ('datestamp', models.DateTimeField()),
-                ('base_url', models.URLField(unique=True)),
-                ('archive_url', models.URLField(unique=True)),
-                ('participants', models.TextField()),
-                ('institution', models.CharField(max_length=256)),
-                ('institution_url', models.URLField()),
-                ('short_location', models.CharField(max_length=512)),
-                ('location', models.CharField(max_length=512)),
-                ('synopsis', models.TextField()),
-                ('access', models.TextField()),
-                ('submission_policy', models.TextField()),
+                ('name', models.CharField(unique=True, max_length=512, blank=True)),
+                ('base_url', models.CharField(unique=True, max_length=1024)),
             ],
             options={
                 'abstract': False,
@@ -85,6 +87,12 @@ class Migration(migrations.Migration):
             model_name='collection',
             name='repository',
             field=models.ForeignKey(blank=True, to='olacharvests.Repository', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='archivemetadataelement',
+            name='repository',
+            field=models.ForeignKey(related_name='archive_data', to='olacharvests.Repository', null=True),
             preserve_default=True,
         ),
     ]

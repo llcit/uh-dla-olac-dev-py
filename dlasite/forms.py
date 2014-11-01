@@ -11,47 +11,62 @@ from oaipmh.metadata import MetadataRegistry, oai_dc_reader
 from olacharvests.olac import OLACClient
 from olacharvests.models import Repository, Collection, Record, MetadataElement
 
+from .utils import OLACUtil
+
 class CreateRepositoryForm(ModelForm):
 
     def clean(self):
         cleaned_data = super(CreateRepositoryForm, self).clean()
         try:
-
-            client = OLACClient(cleaned_data.get('base_url'))    
-            repository_info = client.identify()
-            info = []
-            for i in repository_info:
-                if i.fieldname == 'name':
-                    cleaned_data['name'] = i.data
-                
-                d = {}
-                d[i.fieldname] = i.data
-                info.append(d)
-
-            cleaned_data['info'] = json.dumps(info)
-            
+            self.olac_client = OLACUtil(cleaned_data.get('base_url'))
+            self.repo_data = self.olac_client.get_repository()
+            self.record_list = self.olac_client.get_record_list()         
         except:
             raise ValidationError('Repository base url is invalid.')
 
         return cleaned_data
 
     def save(self):
-        repository = super(CreateRepositoryForm, self).save(commit=False)
-        repository.name = self.cleaned_data.get('name')
-        repository.base_url = self.cleaned_data.get('base_url')
-        repository.info_list = self.cleaned_data.get('info')
+        # Create the repository
+        try: 
+            repository = super(CreateRepositoryForm, self).save(commit=False)
+
+
+            repository.base_url = self.cleaned_data.get('base_url')     
+            repository.save()
+        except:
+            print 'Exception'
+
+        for i in self.repo_data:
+            if i.fieldname == 'name':
+                repository.name = i.data
+                repository.save()
+            
+            repository.set_info_item(i)
+
+        # Add the records 
         
-        # repository.archive_url = self.cleaned_data.get('archive_url')
-        # repository.participants = list(self.cleaned_data.get('participant'))
-        # repository.institution = self.cleaned_data.get('institution')
-        # repository.institution_url = self.cleaned_data.get('institution_url')
-        # repository.short_location = self.cleaned_data.get('short_location')
-        # repository.location = self.cleaned_data.get('location')
-        # repository.synopsis = self.cleaned_data.get('synopsis')
-        # repository.access = self.cleaned_data.get('access')
-        # repository.submission_policy = self.cleaned_data.get('submission_policy')
-        repository.save()
-        
+        for i in self.record_list:
+            # Create a collection on the fly
+            try:
+                collection = Collection.objects.get(set_spec=i.header['setSpec'])
+            except:
+                collection = Collection(identifier=i.header['setSpec'])
+                collection.save()
+
+            record = Record(
+                identifier = i.header['identifier'],
+                datestamp = i.header['datestamp'],
+                set_spec = collection
+                )
+
+            record.save()
+            
+            print 'Storing metadata....'
+            for j in i.metadata:
+                record.set_metadata_item(j)
+                print j
+
         return repository
 
     class Meta:

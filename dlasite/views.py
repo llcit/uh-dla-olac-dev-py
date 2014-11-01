@@ -162,7 +162,6 @@ class SearchView(ListView):
         context['len'] = len(self.items)
         context['query'] = self.query
         context['key'] = self.key
-        # pdb.set_trace()
         return context
 
 
@@ -176,13 +175,18 @@ class RepositoryView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(RepositoryView, self).get_context_data(**kwargs)
-        context['info'] = json.loads(self.get_object().info_list)
+        context['info'] = self.get_object().as_dict()
         return context
 
-class RepositoryCreateView(CreateView):
+class RepositoryListManageView(CreateView):
     model = Repository
-    template_name = 'olac_repository_form.html'
+    template_name = 'olac_repository_manage.html'
     form_class = CreateRepositoryForm
+
+    def get_context_data(self, **kwargs):
+        context = super(RepositoryListManageView, self).get_context_data(**kwargs)
+        context['existing_repositories'] = Repository.objects.all()
+        return context
 
 class HarvestRepositoryView(DetailView):
     model = Repository

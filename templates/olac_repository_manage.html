@@ -1,0 +1,35 @@
+<!-- olac_repository_manage.html -->
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block page_header %}  {% endblock page_header %}
+
+{% block content %}
+	<h3> Current OLAC Repository Harvests </h3>
+	<div class="">
+		{% for i in existing_repositories %}
+			<p>
+				<a href="{{ i.get_absolute_url }}">{{ i.name }}</a> {{ i.base_url }}
+				<button>harvest</button>
+			</p>
+		{% endfor %}
+	</div>
+
+
+	<div class="">
+		{% if messages %}
+		    {% for message in messages %}
+		    	<h4{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h4>
+		    {% endfor %}
+		{% endif %}
+
+
+		<h3> Add a New OLAC Repository: </h3>
+		
+		<form action="" method="post">{% csrf_token %}
+	    	{{ form.as_p }}
+	    	<input type="submit" value="Harvest It" />
+		</form>
+	</div>
+
+{% endblock content %}

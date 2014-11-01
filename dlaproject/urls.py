@@ -11,7 +11,7 @@ from dlasite.views import (
 	SearchView,
 	SearchPage,
 	RepositoryView,
-	RepositoryCreateView
+	RepositoryListManageView
 )
 
 urlpatterns = patterns('',
@@ -33,8 +33,8 @@ urlpatterns = patterns('',
 
 	url(r'^repository/(?P<pk>\d+)$',
 	   RepositoryView.as_view(), name='olac_repository'),
-	url(r'^repository/add/$',
-	   RepositoryCreateView.as_view(), name='add_repository'),
+	url(r'^repository/manage/$',
+	   RepositoryListManageView.as_view(), name='manage_repositories'),
 
 	url(r'^admin/', include(admin.site.urls)),
 )

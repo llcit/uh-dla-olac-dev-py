@@ -20,7 +20,7 @@ olac_archive_reader = {
     'synopsis': '//olac-archive:synopsis',
     'access': '//olac-archive:access',
     'submission_policy': '//olac-archive:archivalSubmissionPolicy',
-    'current_as_of': '//olac-archive:olac-archive'
+    'datestamp': '//olac-archive:olac-archive'
 }
 
 olac_dc_reader = {
@@ -77,20 +77,39 @@ class OLACClient(object):
         """
         self.root = self.build_tree_root(xmlfilepath)
 
+
+    def build_tree_root(self, xmlfilepath):
+        try:
+            request = urllib2.Request(xmlfilepath)
+            response = urllib2.urlopen(request)
+            text = response.read()
+        except:
+            return etree.XML('')
+        
+        try:
+            xml = text.encode('ascii', 'replace')
+            xml = unicode(xml, 'UTF-8', 'replace')
+            xml = xml.replace(chr(12), '?')
+            xml = xml.encode('UTF-8')
+        except:
+            return etree.XML('')
+
+        return etree.XML(xml)
+
     def identify(self):
         evaluator = etree.XPathEvaluator(self.root, namespaces=namespaces)
 
-        repository_info = [] # list of metadatitem named tuples
-        for fieldname, xpath in olac_archive_reader.items():
+        repository_info = [] # list of metadatitem namedtuples
+        for tag, xpath in olac_archive_reader.items():
             for node in evaluator(xpath):
-                if fieldname == 'participant':
-                    data = '%s (%s) %s'% (node.get('name'), node.get('role'), node.get('email'))
-                elif fieldname == 'current_as_of':
-                    data = node.get('currentAsOf')
+                if tag == 'participant':
+                    text = '%s (%s) %s'% (node.get('name'), node.get('role'), node.get('email'))
+                elif tag == 'datestamp':
+                    text = node.get('currentAsOf')
                 else:
-                    data = node.text
+                    text = node.text
 
-                repository_info.append(OlacMetadataItem(fieldname, data))
+                repository_info.append(OlacMetadataItem(tag, text))
         
         return repository_info
 
@@ -118,20 +137,6 @@ class OLACClient(object):
 
         return record_list
 
-    def build_tree_root(self, xmlfilepath):
-        # with codecs.open(xmlfilepath, 'r', 'utf-8') as xmlfile:
-        #     text = xmlfile.read()
-
-        request = urllib2.Request(xmlfilepath)
-        response = urllib2.urlopen(request)
-        text = response.read()
-        
-        xml = text.encode('ascii', 'replace')
-        xml = unicode(xml, 'UTF-8', 'replace')
-        xml = xml.replace(chr(12), '?')
-        xml = xml.encode('UTF-8')
-        return etree.XML(xml)
-
     def build_header(self, element):
         hdr_evaluator = etree.XPathEvaluator(element, namespaces=namespaces)
         identifier = hdr_evaluator('.//oai:identifier')
@@ -152,7 +157,6 @@ class OLACClient(object):
         return header
 
     def build_metadata(self, element):
-        print '\n-------------------------------\n'
         meta_evaluator = etree.XPathEvaluator(
             element, namespaces=namespaces)  # Get the metadata tree
         metadata = []

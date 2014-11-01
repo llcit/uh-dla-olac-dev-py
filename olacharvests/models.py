@@ -21,19 +21,32 @@ class Repository(TimeStampedModel):
     See: http://www.language-archives.org/OLAC/1.1/static-repository.xml
     and /docs/sample-olac-static-repo.xml
     """
-    name = models.CharField(max_length=512, unique=True)
+    name = models.CharField(max_length=512, unique=True, blank=True)
     base_url = models.CharField(max_length=1024, unique=True)
-    info_list = models.TextField(default={}, blank=True)
-
+    
     def list_collections(self):
         return self.collection_set.all()
 
-    def get_info_item(self, item_type):
-        for i in self.info_list:
-            if i.get(item_type):
-                return i
+    def get_info_item(self, info_type):
+        return self.archive_data.all(element_type=info_type)
 
-        return None
+    def set_info_item(self, metadata_element):
+        element = ArchiveMetadataElement(
+            repository = self,
+            element_type = metadata_element.fieldname,
+            element_data = metadata_element.data
+            )
+        element.save()
+        return element
+
+    def as_dict(self):
+        info = self.archive_data.all().order_by('element_type')
+        info_list = []
+        for i in info:
+            d = {}
+            d[i.element_type] = i.element_data
+            info_list.append(d)
+        return info_list
 
     def __unicode__(self):
         return self.name
@@ -50,8 +63,8 @@ class Collection(TimeStampedModel):
     using the OAI-PMH standard (pyoai module needed for this)
     """
 
-    identifier = models.CharField(primary_key=True, max_length=256)
-    name = models.CharField(max_length=256, blank=True)
+    identifier = models.CharField(max_length=256, unique=True)
+    name = models.CharField(max_length=256, null=True, blank=True)
     repository = models.ForeignKey(Repository, null=True, blank=True)
 
     def count_records(self):
@@ -74,12 +87,21 @@ class Record(TimeStampedModel):
     of the metadata standard.
     """
     identifier = models.CharField(max_length=256, unique=True)
-    datestamp = models.DateTimeField()
-    set_spec = models.ForeignKey(Collection)
+    datestamp = models.CharField(max_length=48)
+    set_spec = models.ForeignKey(Collection, null=True, blank=True)
 
     def remove_data(self):
         MetadataElement.objects.filter(record=self).delete()
         return
+
+    def set_metadata_item(self, metadata_element):
+        element = MetadataElement(
+            record = self,
+            element_type = metadata_element.fieldname,
+            element_data = metadata_element.data
+            )
+        element.save()
+        return element
 
     def get_metadata_item(self, e_type):
         return self.data.filter(element_type=e_type)
@@ -142,6 +164,22 @@ class MetadataElement(models.Model):
 
     """A tuple containing an element_type (dublin core) and its data"""
     record = models.ForeignKey(Record, null=True, related_name='data')
+    element_type = models.CharField(max_length=256)
+    element_data = models.TextField(default='')
+
+    def __unicode__(self):
+        return u'%s:%s' % (self.element_type, self.element_data)
+
+    def get_absolute_url(self):
+        pass  # return reverse('collection', args=[str(self.id)])
+
+class ArchiveMetadataElement(models.Model):
+
+    """
+    A archive informationtuple containing an 
+    element_type (dublin core/olac) and its data
+    """
+    repository = models.ForeignKey(Repository, null=True, related_name='archive_data')
     element_type = models.CharField(max_length=256)
     element_data = models.TextField(default='')
 
