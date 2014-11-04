@@ -165,7 +165,7 @@ class MetadataElement(models.Model):
     """A tuple containing an element_type (dublin core) and its data"""
     record = models.ForeignKey(Record, null=True, related_name='data')
     element_type = models.CharField(max_length=256)
-    element_data = models.TextField(default='')
+    element_data = models.TextField(null=True, default='')
 
     def __unicode__(self):
         return u'%s:%s' % (self.element_type, self.element_data)

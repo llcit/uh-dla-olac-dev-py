@@ -30,8 +30,6 @@ class CreateRepositoryForm(ModelForm):
         # Create the repository
         try: 
             repository = super(CreateRepositoryForm, self).save(commit=False)
-
-
             repository.base_url = self.cleaned_data.get('base_url')     
             repository.save()
         except:
@@ -49,7 +47,7 @@ class CreateRepositoryForm(ModelForm):
         for i in self.record_list:
             # Create a collection on the fly
             try:
-                collection = Collection.objects.get(set_spec=i.header['setSpec'])
+                collection = Collection.objects.get(identifier=i.header['setSpec'])
             except:
                 collection = Collection(identifier=i.header['setSpec'])
                 collection.save()
@@ -65,7 +63,6 @@ class CreateRepositoryForm(ModelForm):
             print 'Storing metadata....'
             for j in i.metadata:
                 record.set_metadata_item(j)
-                print j
 
         return repository
 
