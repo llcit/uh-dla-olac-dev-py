@@ -1,4 +1,7 @@
 from django.db import models
+
+from model_utils.models import TimeStampedModel
+
 from olacharvests.models import Repository
 
 class RepositoryCache(models.Model):

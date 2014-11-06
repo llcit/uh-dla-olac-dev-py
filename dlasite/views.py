@@ -1,15 +1,15 @@
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import TemplateView, ListView, DetailView, CreateView
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView
 from django.template import RequestContext
 from django.http import HttpResponse
 from django.db.models import Q, Count
 from collections import Counter, namedtuple
-import json, operator
+import datetime, json, operator
 
 from olacharvests.models import Repository, Collection, Record, MetadataElement
 from .mixins import RecordSearchMixin, MapDataMixin
 from .models import RepositoryCache
-from .forms import CreateRepositoryForm
+from .forms import CreateRepositoryForm, HarvestRepositoryForm
 
 class HomeView(MapDataMixin, TemplateView):
     template_name = 'home.html'
@@ -61,14 +61,43 @@ class HomeView(MapDataMixin, TemplateView):
 
         return context
 
+class RepositoryView(DetailView):
+    model = Repository
+    template_name = 'olac_repository.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RepositoryView, self).get_context_data(**kwargs)
+        context['info'] = self.get_object().as_dict()
+        return context
+
+class RepositoryListManageView(CreateView):
+    model = Repository
+    template_name = 'olac_repository_manage.html'
+    form_class = CreateRepositoryForm
+
+    def get_context_data(self, **kwargs):
+        context = super(RepositoryListManageView, self).get_context_data(**kwargs)
+        context['existing_repositories'] = Repository.objects.all()
+        return context
+
+class RepositoryHarvestUpdateView(UpdateView):
+    model = Repository
+    template_name = 'olac_harvest.html'
+    form_class = HarvestRepositoryForm
+    
+    def get_initial(self):
+        """
+        Sets the Repository to update the last_harvest field to current day.
+        """
+        initial = self.initial.copy()
+        initial['last_harvest'] = datetime.date.today()
+        return initial
+
 
 class CollectionListView(ListView):
     model = Collection
     template_name = 'collection_list.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(CollectionListView, self).get_context_data(**kwargs)
-        return context
 
 
 class CollectionView(MapDataMixin, DetailView):
@@ -169,28 +198,6 @@ class SearchPage(RecordSearchMixin, ListView):
     model = Record
     template_name = 'searchtest.html'
 
-class RepositoryView(DetailView):
-    model = Repository
-    template_name = 'olac_repository.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(RepositoryView, self).get_context_data(**kwargs)
-        context['info'] = self.get_object().as_dict()
-        return context
-
-class RepositoryListManageView(CreateView):
-    model = Repository
-    template_name = 'olac_repository_manage.html'
-    form_class = CreateRepositoryForm
-
-    def get_context_data(self, **kwargs):
-        context = super(RepositoryListManageView, self).get_context_data(**kwargs)
-        context['existing_repositories'] = Repository.objects.all()
-        return context
-
-class HarvestRepositoryView(DetailView):
-    model = Repository
-    template_name = 'olac_harvest.html'
 
 
 

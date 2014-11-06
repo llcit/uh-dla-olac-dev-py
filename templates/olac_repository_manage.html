@@ -10,7 +10,7 @@
 		{% for i in existing_repositories %}
 			<p>
 				<a href="{{ i.get_absolute_url }}">{{ i.name }}</a> {{ i.base_url }}
-				<button>harvest</button>
+				<a href="{% url 'harvest_repository' i.id %}" class="button"> Harvest</a>
 			</p>
 		{% endfor %}
 	</div>
@@ -28,7 +28,7 @@
 		
 		<form action="" method="post">{% csrf_token %}
 	    	{{ form.as_p }}
-	    	<input type="submit" value="Harvest It" />
+	    	<input type="submit" value="Add to site" />
 		</form>
 	</div>
 

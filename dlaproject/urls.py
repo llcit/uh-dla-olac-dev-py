@@ -11,14 +11,26 @@ from dlasite.views import (
 	SearchView,
 	SearchPage,
 	RepositoryView,
-	RepositoryListManageView
+	RepositoryListManageView,
+	RepositoryHarvestUpdateView
 )
 
 urlpatterns = patterns('',
 
 	url(r'^$', HomeView.as_view(), name='home'),
+	url(r'^repository/(?P<pk>\d+)/$',
+	   RepositoryView.as_view(), name='olac_repository'),
+	
+	url(r'^repository/manage/$',
+	   RepositoryListManageView.as_view(), name='manage_repositories'),
+	
+	url(r'^repository/harvest/(?P<pk>\d+)/$',
+	   RepositoryHarvestUpdateView.as_view(), name='harvest_repository'),
+	
 	url(r'^collections/$', CollectionListView.as_view(),
 	   name='collection_list'),
+
+
 	url(r'^collection/(?P<pk>\w+)$',
 	   CollectionView.as_view(), name='collection'),
 	url(r'^item/(?P<pk>\w+)$',
@@ -31,10 +43,6 @@ urlpatterns = patterns('',
 	url(r'^searchtest/$', SearchPage.as_view(),
 	   name='searchtest'),
 
-	url(r'^repository/(?P<pk>\d+)$',
-	   RepositoryView.as_view(), name='olac_repository'),
-	url(r'^repository/manage/$',
-	   RepositoryListManageView.as_view(), name='manage_repositories'),
 
 	url(r'^admin/', include(admin.site.urls)),
 )

@@ -1,0 +1,15 @@
+<!-- olac_harvest.html -->
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block page_title %}Harvesting {{ object.name }}{% endblock page_title %}
+
+{% block content %}
+	<h2> Harvesting... {{ object.name }}</h2>
+	<p>Last harvested on {{ object.last_harvest }}</p>
+	
+	<form action="" method="post">{% csrf_token %}
+    	{{ form.as_p }}
+    	<input type="submit" value="Harvest time!" />
+	</form>
+{% endblock content %}

@@ -13,56 +13,30 @@ from olacharvests.models import Repository, Collection, Record, MetadataElement
 
 from .utils import OLACUtil
 
+
 class CreateRepositoryForm(ModelForm):
 
     def clean(self):
         cleaned_data = super(CreateRepositoryForm, self).clean()
         try:
-            self.olac_client = OLACUtil(cleaned_data.get('base_url'))
-            self.repo_data = self.olac_client.get_repository()
-            self.record_list = self.olac_client.get_record_list()         
+            olac_client = OLACUtil(cleaned_data.get('base_url'))
+            repo_meta = olac_client.get_repository()
+            repo_name = [x for x in repo_meta if x.fieldname == 'name']
+            cleaned_data['repo_name'] = repo_name[0].data
+            cleaned_data['repo_meta'] = repo_meta
         except:
             raise ValidationError('Repository base url is invalid.')
 
         return cleaned_data
 
     def save(self):
-        # Create the repository
-        try: 
-            repository = super(CreateRepositoryForm, self).save(commit=False)
-            repository.base_url = self.cleaned_data.get('base_url')     
-            repository.save()
-        except:
-            print 'Exception'
+        # Create the repository and assign the metadatarchive elements
+        repository = super(CreateRepositoryForm, self).save(commit=False)
+        repository.name = self.cleaned_data['repo_name']
+        repository.save()
 
-        for i in self.repo_data:
-            if i.fieldname == 'name':
-                repository.name = i.data
-                repository.save()
-            
+        for i in self.cleaned_data['repo_meta']:
             repository.set_info_item(i)
-
-        # Add the records 
-        
-        for i in self.record_list:
-            # Create a collection on the fly
-            try:
-                collection = Collection.objects.get(identifier=i.header['setSpec'])
-            except:
-                collection = Collection(identifier=i.header['setSpec'])
-                collection.save()
-
-            record = Record(
-                identifier = i.header['identifier'],
-                datestamp = i.header['datestamp'],
-                set_spec = collection
-                )
-
-            record.save()
-            
-            print 'Storing metadata....'
-            for j in i.metadata:
-                record.set_metadata_item(j)
 
         return repository
 
@@ -71,53 +45,20 @@ class CreateRepositoryForm(ModelForm):
         fields = ['base_url']
 
 
-# class CreateCommunityForm(ModelForm):
+class HarvestRepositoryForm(ModelForm):
 
-#     def __init__(self, *args, **kwargs):
-#         try:
-#             repo = kwargs.pop('repo')
-#             communities = kwargs.pop('community_list')
-#         except:
-#             pass
+    def clean(self):
+        cleaned_data = super(HarvestRepositoryForm, self).clean()
+        try:
+            olac_client = OLACUtil(cleaned_data.get('base_url'))
+            olac_client.harvest_records()
+        except ValidationError:
+            raise ValidationError(str( ('Repository at %s is invalid.')% cleaned_data.get('base_url') ))
 
-#         super(CreateCommunityForm, self).__init__(*args, **kwargs)
+        return cleaned_data
 
-#         self.fields['identifier'] = forms.CharField(
-#             widget=forms.Select(choices=communities))
-#         self.fields['identifier'].label = 'Select Community Collection From ' + \
-#             repo.name + ':'
-#         self.fields['repository'].initial = repo
-#         self.fields['repository'].empty_label = None
-#         self.fields['repository'].label = repo.name
-
-#     class Meta:
-#         model = Community
-#         fields = ['identifier', 'name', 'repository']
-#         widgets = {'name':
-#                    forms.HiddenInput(), 'repository': forms.HiddenInput()}
-
-
-# class CreateCollectionForm(ModelForm):
-
-#     def __init__(self, *args, **kwargs):
-
-#         try:
-#             community = kwargs.pop('community')
-#             collections = kwargs.pop('collections_list')
-#         except:
-#             pass
-
-#         super(CreateCollectionForm, self).__init__(*args, **kwargs)
-
-#         self.fields['identifier'] = forms.CharField(
-#             widget=forms.Select(choices=collections))
-#         self.fields['identifier'].label = 'Select Collection From ' + \
-#             community.name + ':'
-#         self.fields['community'].initial = community
-#         self.fields['community'].label = community.name
-
-#     class Meta:
-#         model = Collection
-#         fields = ['identifier', 'name', 'community']
-#         widgets = {'name':
-#                    forms.HiddenInput(), 'community': forms.HiddenInput()}
+    class Meta:
+        model = Repository
+        fields = ['base_url', 'last_harvest']
+        widgets = {
+            'base_url': forms.HiddenInput(), 'last_harvest': forms.HiddenInput()}

@@ -23,6 +23,7 @@ class Repository(TimeStampedModel):
     """
     name = models.CharField(max_length=512, unique=True, blank=True)
     base_url = models.CharField(max_length=1024, unique=True)
+    last_harvest = models.DateField(null=True)
     
     def list_collections(self):
         return self.collection_set.all()
@@ -74,7 +75,7 @@ class Collection(TimeStampedModel):
         return self.record_set.all()
 
     def __unicode__(self):
-        return self.name
+        return self.identifier
 
     def get_absolute_url(self):
         return reverse('collection', args=[str(self.identifier)])
@@ -154,8 +155,8 @@ class Record(TimeStampedModel):
         return coords
 
     def __unicode__(self):
-        title = json.loads(self.get_metadata_item('title')[0].element_data)[0]
-        return '%s - %s' % (self.hdr_setSpec, title)
+        title = self.get_metadata_item('title')[0].element_data
+        return '%s - %s' % (self.set_spec, title)
 
     def get_absolute_url(self):
         return reverse('item', args=[str(self.id)])
