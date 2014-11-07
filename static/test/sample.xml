@@ -90,12 +90,14 @@
           <dc:creator>Evans, Nicholas D.</dc:creator>
           <dc:subject>Kayardild grammar</dc:subject>
            <dc:subject xsi:type="olac:language" olac:code="gyd"/>
+           <dc:subject xsi:type="olac:language" olac:code="wtf"/>
            <dc:subject xsi:type="olac:linguistic-field" olac:code="syntax"/>
            <dc:subject xsi:type="olac:discourse-type" olac:code="narrative"/>
           <dc:language xsi:type="olac:language" olac:code="eng"/>
           <dc:description>Kayardild Grammar (ISBN 3110127954)</dc:description>
           <dc:publisher>Berlin - Mouton de Gruyter</dc:publisher>
           <dc:contributor xsi:type="olac:role" olac:code="author">Nicholas Evans</dc:contributor>
+          <dcterms:spatial xsi:type="dcterms:Point">north=99.4278; east=88.5495</dcterms:spatial>
           <dc:format>hardcover, 837 pages</dc:format>
           <dc:relation>related to ISBN 0646119966</dc:relation>
           <dc:coverage>Australia</dc:coverage>
@@ -123,6 +125,7 @@
           <dc:contributor xsi:type="olac:role" olac:code="researcher">Penny Johnson</dc:contributor>
           <dc:contributor xsi:type="olac:role" olac:code="researcher">Marbuk Kohler</dc:contributor>
           <dc:contributor xsi:type="olac:role" olac:code="researcher">Ken Hale</dc:contributor>
+          <dcterms:spatial xsi:type="dcterms:Point">north=7.4278; east=134.5495</dcterms:spatial>
           <dc:format>format: xiv, 334 p. : ill. ; 24 cm</dc:format>
           <dc:relation>related to ISBN 3110127954</dc:relation>
           <dc:coverage>Australia</dc:coverage>
@@ -154,6 +157,7 @@
           <dc:language xsi:type="olac:language" olac:code="sov"/>
           <dc:language xsi:type="olac:language" olac:code="eng"/>
           <dc:subject xsi:type="olac:language" olac:code="sov" />
+          <dc:subject xsi:type="olac:language" olac:code="wtf" />
           <dc:title>EB1-066</dc:title>
           <dc:type xsi:type="olac:linguistic-type" olac:code="language_description"/>
           <dc:type xsi:type="olac:linguistic-type" olac:code="lexicon"/>

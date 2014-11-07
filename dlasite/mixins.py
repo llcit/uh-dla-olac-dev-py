@@ -4,8 +4,17 @@ import json
 
 from olacharvests.models import MetadataElement, Record
 
+"""NOTE TO self
+List comprehensions are great:
+Count all the languages in the metadata:
+tally = Counter()
+tally.update(i.element_data for i in MetadataElement.objects.filter(element_type='subject.language'))
+
+See changes below for examples of list comprehensions.
+"""
+
 """ A namedtuple to construct unique points to plot """
-Plot = namedtuple('Plot',['lat', 'lng'])
+Plot = namedtuple('Plot',['north', 'east'])
 
 class MapDataMixin(object):
     """
@@ -15,33 +24,41 @@ class MapDataMixin(object):
 
     def get_context_data(self, **kwargs):
         context = super(MapDataMixin, self).get_context_data(**kwargs)
+        maplists = self.make_map_lists(self.queryset)
+
+        context['mapped_records'] = maplists['mapped_records']
+        context['mapped_languages'] = maplists['mapped_languages']
+        context['mapped_plots']= maplists['mapped_plots']
+
+        return context
+
+    def make_map_lists(self, queryset):
         mapped_plots = set()
         mapped_languages = set()
         mapped_records = []
 
-        for record in self.queryset:
+        for record in queryset:
             record_dict = record.as_dict() 
-            mapped_data = json.loads(record.get_metadata_item('coverage')[0].element_data)
-            if mapped_data:
-                mapped_plots.add(self.make_map_plot(mapped_data))
-                mapped_languages |= set(json.loads(record.get_metadata_item('language')[0].element_data))
-                mapped_records.append(record_dict)
+            mapped_data = [json.loads(i.element_data) for i in record.get_metadata_item('spatial')]
+            [ mapped_plots.add(Plot(i['east'], i['north'])) for i in mapped_data ]    
+            mapped_languages |= set([i.element_data for i in record.get_metadata_item('subject.language')])   
+            mapped_records.append(record_dict)
 
         mapped_plots = self.make_json_map_plots(mapped_plots)
+        maplists = {}
+        maplists['mapped_records'] = sorted(mapped_records)
+        maplists['mapped_languages'] = sorted(mapped_languages)
+        maplists['mapped_plots']= unicode(mapped_plots)
 
-        context['mapped_records'] = sorted(mapped_records)
-        context['mapped_languages'] = sorted(mapped_languages)
-        context['mapped_plots']= unicode(mapped_plots)
-
-        return context
+        return maplists
 
         
     def make_map_plot(self, json_position):
         """
-        Create a two-item array from a json representaiton of metaelement coverage data e.g. [u'7.4278', u'134.5495']
+        Create a Plot (namedtuple) from a json representation of metaelement coverage data e.g. [u'7.4278', u'134.5495']
         """
         try:
-            return Plot(json_position[0], json_position[1])
+            return Plot(json_position['north'], json_position['east'])
         except:
             return None
 

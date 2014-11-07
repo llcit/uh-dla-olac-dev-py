@@ -3,7 +3,8 @@ import json
 from collections import Counter, namedtuple
 
 from olacharvests.models import Repository, Collection, Record, MetadataElement
-from olacharvests.olac import OLACClient
+from olacharvests.olac import OLACClient, OlacMetadataItem
+
 from .models import RepositoryCache
 
 """
@@ -20,6 +21,8 @@ contributors = metadata.filter(element_type__startswith='contributor.')
 cf = Counter()
 cf.update([x.element_data for x in contributors])
 
+mapped_data = metadata.filter(element_type='spatial')
+points = Counter
 
 
 from dlasite.utils import OLACUtil
@@ -111,8 +114,20 @@ class OLACUtil(object):
                 record.set_spec = collection
                 record.save()
 
-                # Store the metadata element data for the record
+                
+                # Clear existing metadata for this record.
+                record.data.all().delete()
+
+                # Replenish metadata element data for the record from xml harvest
+                # NOTE: reads off olac.OlacMetadataItem namedtuples
                 for m in node.metadata:
+
+                    if m.fieldname == 'spatial':
+                        s = m.data.replace(' ', '').split(';')
+                        s = [s[i].split('=') for i in range(len(s))]
+                        s = {s[0][0]:s[0][1], s[1][0]:s[1][1]}
+                        m = OlacMetadataItem(m.fieldname, json.dumps(s))
+
                     record.set_metadata_item(m)
 
                 index = index + 1

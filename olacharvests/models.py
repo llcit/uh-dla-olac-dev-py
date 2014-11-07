@@ -101,6 +101,7 @@ class Record(TimeStampedModel):
             element_type = metadata_element.fieldname,
             element_data = metadata_element.data
             )
+
         element.save()
         return element
 
@@ -130,11 +131,12 @@ class Record(TimeStampedModel):
         record_dict = {}
         elements = self.data.all().order_by('element_type')
         for e in elements:
-            data = json.loads(e.element_data)
+            data = e.element_data
             if e.element_type == 'spatial':
+                print 'Spatial repr: ', data
                 try:
-                    record_dict['coverage_lat'] = [data[0]]
-                    record_dict['coverage_lng'] = [data[1]]
+                    record_dict['east'] = [data[0]]
+                    record_dict['north'] = [data[1]]
                 except:
                     record_dict['coverage_lat'] = []
                     record_dict['coverage_lng'] = []
