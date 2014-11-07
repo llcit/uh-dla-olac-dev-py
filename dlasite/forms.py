@@ -11,7 +11,7 @@ from oaipmh.metadata import MetadataRegistry, oai_dc_reader
 from olacharvests.olac import OLACClient
 from olacharvests.models import Repository, Collection, Record, MetadataElement
 
-from .utils import OLACUtil
+from .utils import OLACUtil, OAIUtil
 
 
 class CreateRepositoryForm(ModelForm):
@@ -62,3 +62,29 @@ class HarvestRepositoryForm(ModelForm):
         fields = ['base_url', 'last_harvest']
         widgets = {
             'base_url': forms.HiddenInput(), 'last_harvest': forms.HiddenInput()}
+
+class CollectionsUpdateForm(ModelForm):
+    
+    def __init__(self, *args, **kwargs):
+       super(CollectionsUpdateForm, self).__init__(*args, **kwargs)
+       self.fields['request_url'] = forms.CharField()
+
+    def clean(self):
+        cleaned_data = super(CollectionsUpdateForm, self).clean()
+        try:
+            oai_client = OAIUtil(cleaned_data.get('request_url'))
+            oai_client.update_oai_collection_info()
+        
+        except:
+            raise ValidationError(str( ('OAI Repository at %s is invalid.')% cleaned_data.get('request_url') ))
+
+        return cleaned_data
+
+    class Meta:
+        model = Repository
+        fields = ['base_url']
+        widgets = {
+            'base_url': forms.HiddenInput()}
+
+
+

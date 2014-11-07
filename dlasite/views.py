@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView
+from django.core.urlresolvers import reverse_lazy
+from django.views.generic import FormView, TemplateView, ListView, DetailView, CreateView, UpdateView
 from django.template import RequestContext
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.db.models import Q, Count
 from collections import Counter, namedtuple
 import datetime, json, operator
@@ -9,55 +10,36 @@ import datetime, json, operator
 from olacharvests.models import Repository, Collection, Record, MetadataElement
 from .mixins import RecordSearchMixin, MapDataMixin
 from .models import RepositoryCache
-from .forms import CreateRepositoryForm, HarvestRepositoryForm
+from .forms import CreateRepositoryForm, HarvestRepositoryForm, CollectionsUpdateForm
 
 class HomeView(MapDataMixin, TemplateView):
     template_name = 'home.html'
     queryset = None
 
     def get_context_data(self, **kwargs):
-        # mapped_records = []
-
-        # Query and variables for the needed MetadataElments
+        # Map mixin needs queryset variable set.
+        self.queryset = Record.objects.filter(data__element_type='spatial')
+        
+        context = super(HomeView, self).get_context_data(**kwargs)
+        # The root filter.
         metadata = MetadataElement.objects.all()
-
+        
         # Create dictionary with language frequency counts using Counter
         language_frequencies = Counter()
-        for metaelement in metadata.filter(element_type='language'):
-            language_frequencies.update(json.loads(metaelement.element_data))
+        language_frequencies.update(
+            i.element_data for i in metadata.filter(element_type='subject.language'))
+        context['languages'] = sorted(
+            language_frequencies.items(), key=operator.itemgetter(1), reverse=True)
 
         # Create dictionary with contributor frequency counts using Counter
         contributor_frequencies = Counter()
-        for metaelement in metadata.filter(element_type='contributor'):
-            contributor_frequencies.update(
-                json.loads(metaelement.element_data))
-
-        # mapped_plots = set()    # unique coords in mapped records
-        # mapped_languages = set()  # unique languages in mapped records
-
-        self.queryset = Record.objects.filter(data__element_type='coverage')
-
-        # Only retrieve metadata items that have data values set for coverage
-        # for metaelement in metadata.filter(element_type='coverage').exclude(element_data=[]):
-        # mapped_plots.add( make_map_plot(metaelement.element_data) )
-        #     record_dict = metaelement.record.as_dict()
-
-        #     mapped_languages |= set(record_dict['language'])
-        #     mapped_records.append(record_dict)
-
-        # mapped_plots=make_json_map_plots(mapped_plots)
-
-        ######################## Preparing context to render in template ######
-        context = super(HomeView, self).get_context_data(**kwargs)
-        context['collections'] = Collection.objects.all().order_by('name')
-        context['languages'] = sorted(
-            language_frequencies.iteritems(), key=operator.itemgetter(1), reverse=True)
+        contributor_frequencies.update(
+            i.element_data for i in metadata.filter(element_type__startswith='contributor'))
         context['contributors'] = sorted(
-            contributor_frequencies.iteritems(), key=operator.itemgetter(1), reverse=True)
-        # context['mapped_records'] = sorted(
-        #     mapped_records, key=operator.itemgetter('collection'))
-        # context['mapped_plots'] = unicode(mapped_plots)
-        # context['mapped_languages'] = sorted(mapped_languages)
+            contributor_frequencies.items(), key=operator.itemgetter(1), reverse=True)
+
+        # Create collections list
+        context['collections'] = Collection.objects.all().order_by('name')
 
         return context
 
@@ -70,13 +52,13 @@ class RepositoryView(DetailView):
         context['info'] = self.get_object().as_dict()
         return context
 
-class RepositoryListManageView(CreateView):
+class RepositoryCreateView(CreateView):
     model = Repository
     template_name = 'olac_repository_manage.html'
     form_class = CreateRepositoryForm
 
     def get_context_data(self, **kwargs):
-        context = super(RepositoryListManageView, self).get_context_data(**kwargs)
+        context = super(RepositoryCreateView, self).get_context_data(**kwargs)
         context['existing_repositories'] = Repository.objects.all()
         return context
 
@@ -87,18 +69,16 @@ class RepositoryHarvestUpdateView(UpdateView):
     
     def get_initial(self):
         """
-        Sets the Repository to update the last_harvest field to current day.
+        The form performs the harvest.
+        The harvest date is initialized here to current day.
         """
         initial = self.initial.copy()
         initial['last_harvest'] = datetime.date.today()
         return initial
 
-
 class CollectionListView(ListView):
     model = Collection
     template_name = 'collection_list.html'
-
-
 
 class CollectionView(MapDataMixin, DetailView):
     model = Collection
@@ -112,6 +92,22 @@ class CollectionView(MapDataMixin, DetailView):
         context['size'] = len(self.queryset)
         return context
 
+class CollectionsUpdateView(UpdateView):
+    model = Repository
+    template_name = 'collection_update.html'
+    form_class = CollectionsUpdateForm
+    success_url = reverse_lazy('collection_list')
+    
+    def get_object(self, queryset=None):
+        try:
+            return Repository.objects.all().get()
+        except Repository.DoesNotExist:
+            raise Http404
+
+    def get_context_data(self, **kwargs):
+        context = super(CollectionsUpdateView, self).get_context_data(**kwargs)
+        context['collection_list'] = Collection.objects.all()
+        return context
 
 class ItemView(DetailView):
     model = Record
@@ -120,7 +116,6 @@ class ItemView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ItemView, self).get_context_data(**kwargs)
         context['item_data'] = self.get_object().as_dict()
-        print context['item_data']
         return context
 
 

@@ -4,34 +4,41 @@ from django.contrib import admin
 from dlasite.views import (
 	HomeView, 
 	CollectionListView, 
-	CollectionView, 
+	CollectionView,
+	CollectionsUpdateView,
 	ItemView, 
 	LanguageView, 
 	ContributorView, 
 	SearchView,
 	SearchPage,
 	RepositoryView,
-	RepositoryListManageView,
+	RepositoryCreateView,
 	RepositoryHarvestUpdateView
 )
 
 urlpatterns = patterns('',
 
 	url(r'^$', HomeView.as_view(), name='home'),
-	url(r'^repository/(?P<pk>\d+)/$',
+	
+	url(r'^repository/info/(?P<slug>[-\w]+)/$',
 	   RepositoryView.as_view(), name='olac_repository'),
 	
-	url(r'^repository/manage/$',
-	   RepositoryListManageView.as_view(), name='manage_repositories'),
+	url(r'^repository/add/$',
+	   RepositoryCreateView.as_view(), name='add_repository'),
 	
-	url(r'^repository/harvest/(?P<pk>\d+)/$',
+	url(r'^repository/harvest/(?P<slug>[-\w]+)/$',
 	   RepositoryHarvestUpdateView.as_view(), name='harvest_repository'),
+
+	url(r'^collections/update/$', CollectionsUpdateView.as_view(),
+	   name='collections_update'),
 	
-	url(r'^collections/$', CollectionListView.as_view(),
-	   name='collection_list'),
+	
+	url(r'^collections/$', CollectionListView.as_view(), name='collection_list'),
+	
 
 
-	url(r'^collection/(?P<pk>\w+)$',
+
+	url(r'^collection/(?P<slug>[-\w]+)$',
 	   CollectionView.as_view(), name='collection'),
 	url(r'^item/(?P<pk>\w+)$',
 	   ItemView.as_view(), name='item'),

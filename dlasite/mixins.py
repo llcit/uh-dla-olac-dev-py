@@ -37,12 +37,13 @@ class MapDataMixin(object):
         mapped_languages = set()
         mapped_records = []
 
-        for record in queryset:
-            record_dict = record.as_dict() 
+        for record in queryset: 
             mapped_data = [json.loads(i.element_data) for i in record.get_metadata_item('spatial')]
+            
             [ mapped_plots.add(Plot(i['east'], i['north'])) for i in mapped_data ]    
             mapped_languages |= set([i.element_data for i in record.get_metadata_item('subject.language')])   
-            mapped_records.append(record_dict)
+            
+            mapped_records.append(record.as_dict())
 
         mapped_plots = self.make_json_map_plots(mapped_plots)
         maplists = {}

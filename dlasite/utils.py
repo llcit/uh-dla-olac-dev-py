@@ -1,6 +1,8 @@
 # olac_util.py
-import json
+from oaipmh.client import Client
+from oaipmh.metadata import MetadataRegistry, oai_dc_reader
 from collections import Counter, namedtuple
+import json
 
 from olacharvests.models import Repository, Collection, Record, MetadataElement
 from olacharvests.olac import OLACClient, OlacMetadataItem
@@ -80,7 +82,6 @@ class OLACUtil(object):
 
         pass
 
-
     def harvest_records(self):
         index = 0
         if self.client:
@@ -137,5 +138,42 @@ class OLACUtil(object):
         
         return index
 
+class OAIUtil(object):
+    """
+    Utility class for accessing data usin OAI-PMH. This is here mainly to 
+    enrich information related to Collections. The OLAC static repository scheme 
+    implemented at Scholarspace does not provide Collection names but does provide
+    Collection identifiers of the form: col_nnnnnnn.
+    """
+    def __init__(self, request_url):
+        """
+        request_url: base request url for OAI-PMH repository.
+        E.g., https://scholarspace.manoa.hawaii.edu/dspace-oai/request
+        """
+        try:
+            registry = MetadataRegistry()
+            registry.registerReader('oai_dc', oai_dc_reader)
+            self.client = Client(request_url, registry)
+        
+        except:
+            raise ValidationError(str( ('OAI Repository at %s is invalid.')% cleaned_data.get('request_url') ))
+        
+    def update_oai_collection_info(self):
+        # url = 'https://scholarspace.manoa.hawaii.edu/dspace-oai/request'
+        try:
+            oai_collections = list(self.client.listSets())
+            queryset = Collection.objects.all()
+            querylist = [x.identifier for x in queryset]
+            for i in oai_collections:
+                if i[0] in querylist: 
+                    col_obj = queryset.get(identifier=i[0])
+                    col_obj.name = i[1]
+                    col_obj.save()
+                    querylist.remove(i[0])            
+                if not querylist:
+                    break
+        except:
+            return None
 
+        return queryset
         

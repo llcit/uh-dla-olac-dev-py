@@ -9,7 +9,7 @@
 	<h3>Status</h3>
 	<p>Last harvested: 
 		<span> {{ object.last_harvest }}</span> 
-		<span><a href="{% url 'harvest_repository' object.id %}" class="button">harvest now</a></span>
+		<span><a href="{% url 'harvest_repository' object.slug %}" class="button">harvest now</a></span>
 	</p>
 	<h3>Description</h3>
 	{% for i in info %}

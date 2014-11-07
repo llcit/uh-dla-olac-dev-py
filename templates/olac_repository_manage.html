@@ -5,7 +5,7 @@
 {% block page_header %}  {% endblock page_header %}
 
 {% block content %}
-	<h3> Current OLAC Repository Harvests </h3>
+	<h3> Current OLAC Repository </h3>
 	<div class="">
 		{% for i in existing_repositories %}
 			<p>
@@ -16,7 +16,9 @@
 	</div>
 
 
+	
 	<div class="">
+	{% if not existing_repositories %}
 		{% if messages %}
 		    {% for message in messages %}
 		    	<h4{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h4>
@@ -24,12 +26,17 @@
 		{% endif %}
 
 
-		<h3> Add a New OLAC Repository: </h3>
+
+		<h3> Add an OLAC Repository to this site: </h3>
 		
 		<form action="" method="post">{% csrf_token %}
 	    	{{ form.as_p }}
 	    	<input type="submit" value="Add to site" />
 		</form>
+	{% else %}
+		<h3>Only one repository can be associated with this site.</h3>
+	{% endif %}
 	</div>
+	
 
 {% endblock content %}

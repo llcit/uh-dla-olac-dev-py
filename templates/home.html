@@ -45,16 +45,17 @@
 				{% for i in mapped_records %} 
 				 	{% ifchanged i.collection.0 %}<h3 class="collection_title stamp">{{ i.collection.0 }}</h3>{% endifchanged %}
 					<div class="mapped_record_selector 
-						 coord{{ i.coverage_lat.0|cut:'.'|slice:":6" }}_{{ i.coverage_lng.0|cut:'.'|slice:":6" }}
+						 coord{{ i.east|cut:'.'|slice:":6" }}_{{ i.north|cut:'.'|slice:":6" }}
 						 {% for j in i.language %} {{ j }} {% endfor %}
 						 ">
-						{{ i.title.0 }}
-						<input class="title" type="hidden" name="title" value="{{ i.title.0 }}">
-						<input class="language" type="hidden" name="language" value="{% for j in i.language %} {{ j }} {% endfor %}">
-						<input class="latitude" type="hidden" name="latitude" value="{{ i.coverage_lat.0 }}">
-						<input class="longitude" type="hidden" name="longitude" value="{{ i.coverage_lng.0 }}">
+						{{ i.title }}
+						{{ i.subject.language }}
+						<input class="title" type="hidden" name="title" value="{{ i.title }}">
+						<input class="language" type="hidden" name="language" value=" {% for j in i.language %} {{ j }} {% endfor %}">
+						<input class="latitude" type="hidden" name="latitude" value="{{ i.east }}">
+						<input class="longitude" type="hidden" name="longitude" value="{{ i.north }}">
 						<input class="collection" type="hidden" name="collection" value="{{ i.collection.0 }}">
-						<input class="site_url" type="hidden" name="site_url" value="{{ i.site_url.0 }}">
+						<input class="site_url" type="hidden" name="site_url" value="{{ i.site_url }}">
 					</div>			
 				{% endfor %}
 				

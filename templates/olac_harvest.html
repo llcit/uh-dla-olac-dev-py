@@ -2,10 +2,10 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 
-{% block page_title %}Harvesting {{ object.name }}{% endblock page_title %}
+{% block page_title %}Harvest {{ object.name }}{% endblock page_title %}
 
 {% block content %}
-	<h2> Harvesting... {{ object.name }}</h2>
+	<h2> Harvest {{ object.name }}?</h2>
 	<p>Last harvested on {{ object.last_harvest }}</p>
 	
 	<form action="" method="post">{% csrf_token %}

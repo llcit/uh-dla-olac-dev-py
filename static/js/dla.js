@@ -167,6 +167,7 @@ jQuery(function($) {
             } 
             var mapPlots = [];
             for (var i = 0; i<json.length; ++i) {
+                console.log(json[i])
                 mapPlots[i] = new google.maps.LatLng(json[i].east, json[i].north );
             }
 

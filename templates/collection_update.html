@@ -1,0 +1,19 @@
+<!-- collection_update.html -->
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block page_title %}Update Collections{% endblock page_title %}
+
+{% block content %}
+	<h2> Update Collections for {{ object.name }} using OAI  </h2>
+	<ul>
+	{% for collection in collection_list %}
+		<li> {{ collection }} </li>
+	{% endfor %}
+	</ul>
+	
+	<form action="" method="post">{% csrf_token %}
+    	{{ form.as_p }}
+    	<input type="submit" value="Update collection info" />
+	</form>
+{% endblock content %}

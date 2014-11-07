@@ -2,6 +2,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from model_utils.models import TimeStampedModel
 from collections import OrderedDict
+from django.utils.text import slugify
 
 import json
 import operator
@@ -24,6 +25,11 @@ class Repository(TimeStampedModel):
     name = models.CharField(max_length=512, unique=True, blank=True)
     base_url = models.CharField(max_length=1024, unique=True)
     last_harvest = models.DateField(null=True)
+    slug = models.SlugField(null=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Repository, self).save(*args, **kwargs)
     
     def list_collections(self):
         return self.collection_set.all()
@@ -53,7 +59,7 @@ class Repository(TimeStampedModel):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('olac_repository', args=[str(self.id)])
+        return reverse('olac_repository', args=[str(self.slug)])
 
 
 class Collection(TimeStampedModel):
@@ -67,6 +73,14 @@ class Collection(TimeStampedModel):
     identifier = models.CharField(max_length=256, unique=True)
     name = models.CharField(max_length=256, null=True, blank=True)
     repository = models.ForeignKey(Repository, null=True, blank=True)
+    slug = models.SlugField(null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.name:
+            self.slug = slugify(self.id)
+        else:
+            self.slug = slugify(self.name)
+        super(Collection, self).save(*args, **kwargs)
 
     def count_records(self):
         return self.record_set.all().count()
@@ -75,10 +89,12 @@ class Collection(TimeStampedModel):
         return self.record_set.all()
 
     def __unicode__(self):
-        return self.identifier
+        if not self.name:
+            return (self.identifier)
+        return (self.name)
 
     def get_absolute_url(self):
-        return reverse('collection', args=[str(self.identifier)])
+        return reverse('collection', args=[str(self.slug)])
 
 
 class Record(TimeStampedModel):
@@ -142,9 +158,10 @@ class Record(TimeStampedModel):
                     record_dict['north'] = []
             else:
                 record_dict[e.element_type] = data
-        record_dict['collection'] = [self.set_spec]
+        # record_dict['collection'] = self.set_spec
         record_dict['site_url'] = [self.get_absolute_url()]
-        return self.sort_metadata_dict(record_dict)
+        # return self.sort_metadata_dict(record_dict)
+        return record_dict
 
     """Function to get the coordinates of the element to plot in map """
 
