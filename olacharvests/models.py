@@ -133,13 +133,13 @@ class Record(TimeStampedModel):
         for e in elements:
             data = e.element_data
             if e.element_type == 'spatial':
-                print 'Spatial repr: ', data
+                data = json.loads(data)
                 try:
-                    record_dict['east'] = [data[0]]
-                    record_dict['north'] = [data[1]]
+                    record_dict['east'] = data['east']
+                    record_dict['north'] = data['north']
                 except:
-                    record_dict['coverage_lat'] = []
-                    record_dict['coverage_lng'] = []
+                    record_dict['east'] = []
+                    record_dict['north'] = []
             else:
                 record_dict[e.element_type] = data
         record_dict['collection'] = [self.set_spec]

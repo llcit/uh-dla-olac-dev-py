@@ -7,12 +7,12 @@
 	{% for k,v in item_data.items %}
 		<h5>
 			<i>{{ k }}</i>: 
-			{%for i in v %}	
-				<span><b>
-					{% if k == 'identifier' %} {{ i|urlize }} {% else %} {{ i }} {% endif %}
-					{% if not forloop.last %};{% endif %}
-				</b></span> 
-			{% endfor %}
+				
+			<span><b>
+				{% if k == 'identifier' %} {{ v|urlize }} {% else %} {{ v }} {% endif %}
+				
+			</b></span> 
+			
 		</h5>
 	{% endfor %}		
 {% endblock content %}
