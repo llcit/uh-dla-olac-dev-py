@@ -42,23 +42,55 @@
 			<!-- Mapped record selector: displays infowindow for record in google map -->
 			<div class="mapitem_container mapped_collection">
 				
-				{% for i in mapped_records %} 
-				 	{% ifchanged i.collection.0 %}<h3 class="collection_title stamp">{{ i.collection.0 }}</h3>{% endifchanged %}
-					<div class="mapped_record_selector 
-						 coord{{ i.east|cut:'.'|slice:":6" }}_{{ i.north|cut:'.'|slice:":6" }}
-						 {% for j in i.language %} {{ j }} {% endfor %}
-						 ">
-						{{ i.title }}
-						{{ i.subject.language }}
-						<input class="title" type="hidden" name="title" value="{{ i.title }}">
-						<input class="language" type="hidden" name="language" value=" {% for j in i.language %} {{ j }} {% endfor %}">
-						<input class="latitude" type="hidden" name="latitude" value="{{ i.east }}">
-						<input class="longitude" type="hidden" name="longitude" value="{{ i.north }}">
-						<input class="collection" type="hidden" name="collection" value="{{ i.collection.0 }}">
+				{% for i in mapped_collections %}
+			 		<h3 class="collection_title stamp">{{ i.name }}</h3>
+			 		<div class="mapped_record_selector
+			 			{% for j in i.map_plots %}
+			 				coord{{ j.east|cut:'.'|slice:":6" }}_{{ j.north|cut:'.'|slice:":6" }}
+			 			{% endfor %}
+			 			{% for j in i.languages %}
+			 				{{ j }}
+			 			{% endfor %}
+			 		">
+			 		{{ i.name }}
+						<input class="title" type="hidden" name="title" value="{{ i.name }}">
+						<input class="language" type="hidden" name="language" value="
+							{% for j in i.languages %} {{ j }} {% endfor %}
+						">
+						<input class="latitude" type="hidden" name="latitude" value="
+							{% for j in i.map_plots %} {{ j.east }} {% endfor %}
+						">
+						<input class="longitude" type="hidden" name="longitude" value="
+							{% for j in i.map_plots %} {{ j.north }} {% endfor %}
+						">
+						<input class="collection" type="hidden" name="collection" value="{{ i.name }}">
 						<input class="site_url" type="hidden" name="site_url" value="{{ i.site_url }}">
+			 		</div>
+				{% endfor %}
+
+				{% comment %}
+				{% for i in mapped_records %} 
+				 	{% ifchanged i.collection.0 %}
+				 		<h3 class="collection_title stamp">
+				 		<a href="">
+				 			{{ i.collection.0 }}
+				 		</a>
+				 		</h3>
+				 	{% endifchanged %}
+					<div class="mapped_record_selector 
+						 coord{{ i.spatial.0.east|cut:'.'|slice:":6" }}_{{ i.spatial.0.north|cut:'.'|slice:":6" }}
+						 {% for j in i.subject_language %} {{ j }} {% endfor %}
+						 "> 
+						{{ i.title.0 }}						
+						<input class="title" type="hidden" name="title" value="{{ i.title.0 }}">
+						<input class="language" type="hidden" name="language" value="{{ i.subject_language.0 }}">
+						<input class="latitude" type="hidden" name="latitude" value="{{ i.spatial.0.east }}">
+						<input class="longitude" type="hidden" name="longitude" value="{{ i.spatial.0.north }}">
+						<input class="collection" type="hidden" name="collection" value="{{ i.collection.0 }}">
+						<input class="site_url" type="hidden" name="site_url" value="{{ i.site_url.0 }}">
 					</div>			
 				{% endfor %}
-				
+				{% endcomment %}
 			</div>
 		</div>
 	</div>
@@ -155,6 +187,7 @@
 {% block js_script %}
 	<script type="text/javascript">
 		//Get the coordinates info and data from the records inside the DOM
+        // console.log({{ mapped_plots|safe }});
         var json = {{ mapped_plots|safe }};
     </script>
 {% endblock js_script %} 

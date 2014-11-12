@@ -56,8 +56,7 @@ jQuery(function($) {
         } else {
             var lat = $(this).children(".latitude").val();
             var lng = $(this).children(".longitude").val();
-            var display_text = '<p><a href=\"' + $(this).children(".site_url").val() + '\">' + $(this).children(".title").val() + '</a>' + 
-                '<br><b>Collection: </b>' + $(this).children(".collection").val() + 
+            var display_text = '<p><b>Collection: </b><a href=\"' + $(this).children(".site_url").val() + '\">' + $(this).children(".title").val() + '</a>' + 
                 '<br><b>Language: </b> ' + $(this).children(".language").val() + 
                 '<br><b>Coordinates: </b> ' + lat + ', ' + lng + '</p>';
             
@@ -167,7 +166,6 @@ jQuery(function($) {
             } 
             var mapPlots = [];
             for (var i = 0; i<json.length; ++i) {
-                console.log(json[i])
                 mapPlots[i] = new google.maps.LatLng(json[i].east, json[i].north );
             }
 
@@ -203,7 +201,7 @@ jQuery(function($) {
                     
                     // build string used to select relevant classes from mapped records list
                     var record_filter = ".coord"+latstr +"_"+lngstr;
-                    
+                    console.log(record_filter);
                     // display the collection title currently being filtered / handle the button to reset filter
                     $("#filter_reset_btn").css( "display", "inline");
                     $("#current_filter").html( $(record_filter).first().children(".collection").val() )

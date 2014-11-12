@@ -22,7 +22,7 @@
 
   <Identify>
     <repositoryName>Sample OLAC</repositoryName>
-    <baseURL>http://scholarspace.manoa.hawaii.edu/Kaipuleohone.xml</baseURL>
+    <baseURL>http://localhost:8000/static/test/sample.xml</baseURL>
     <protocolVersion>2.0</protocolVersion>
     <adminEmail>betht@hawaii.edu</adminEmail>
     <earliestDatestamp>2006-01-01</earliestDatestamp>
@@ -136,6 +136,7 @@
       <oai:header>
         <oai:identifier>oai:scholarspace.manoa.hawaii.edu:10125/32515</oai:identifier>
         <oai:datestamp>2014-02-21</oai:datestamp>
+        <oai:setSpec>col_10125_32448</oai:setSpec>
       </oai:header>
       <oai:metadata>
         <olac:olac>

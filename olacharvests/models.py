@@ -3,9 +3,13 @@ from django.core.urlresolvers import reverse
 from model_utils.models import TimeStampedModel
 from collections import OrderedDict
 from django.utils.text import slugify
+from collections import namedtuple
 
 import json
 import operator
+
+""" A namedtuple to handle unique points to plot """
+Plot = namedtuple('Plot',['north', 'east'])
 
 
 class Repository(TimeStampedModel):
@@ -28,7 +32,10 @@ class Repository(TimeStampedModel):
     slug = models.SlugField(null=True)
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        if self.name:
+            self.slug = slugify(unicode(self.name))
+        else:
+            self.slug = slugify(unicode(self.id))
         super(Repository, self).save(*args, **kwargs)
     
     def list_collections(self):
@@ -76,10 +83,10 @@ class Collection(TimeStampedModel):
     slug = models.SlugField(null=True)
 
     def save(self, *args, **kwargs):
-        if not self.name:
-            self.slug = slugify(self.id)
+        if self.name:
+            self.slug = slugify(unicode(self.name))
         else:
-            self.slug = slugify(self.name)
+            self.slug = slugify(unicode(self.id))
         super(Collection, self).save(*args, **kwargs)
 
     def count_records(self):
@@ -87,6 +94,37 @@ class Collection(TimeStampedModel):
 
     def list_records(self):
         return self.record_set.all()
+
+    def list_map_plots(self):
+        """ Returns a list of Plot tuples pruned from records in this collection. """
+        plots = set()
+        for record in self.list_records():
+            mapped_data = [json.loads(i.element_data) for i in record.get_metadata_item('spatial')]
+            [ plots.add(Plot(i['east'], i['north'])) for i in mapped_data ] 
+
+        return list(plots)
+
+    def list_languages(self):
+        """ Returns a list of Plot tuples pruned from records in this collection. """
+        languages = set()
+        
+        for record in self.list_records():
+            language_data = [i.element_data for i in record.get_metadata_item('subject.language')]
+            [ languages.add(i) for i in language_data ] 
+
+        return list(languages)
+
+    def as_dict(self):
+        """ Returns a dictionary representation of the collection data as k,v = {type: data list}"""
+        collection_dict = {}
+        collection_dict['identifier'] = self.identifier
+        collection_dict['name'] = self.name
+        collection_dict['repository'] = self.repository
+        collection_dict['site_url'] = self.get_absolute_url()
+        collection_dict['num_records'] = self.count_records()
+        collection_dict['map_plots'] = self.list_map_plots()
+        collection_dict['languages'] = self.list_languages()
+        return collection_dict
 
     def __unicode__(self):
         if not self.name:
@@ -138,34 +176,34 @@ class Record(TimeStampedModel):
 
         return json_metadata
 
-    """Sort record dictionary by key"""
+    
 
     def sort_metadata_dict(self, record_dict):
+        """Sort record dictionary by key"""
         return OrderedDict(sorted(record_dict.items(), key=lambda t: t[0]))
 
     def as_dict(self):
+        """ Returns a dictionary of the record data as k,v = {element type: element data list}"""
         record_dict = {}
         elements = self.data.all().order_by('element_type')
         for e in elements:
-            data = e.element_data
-            if e.element_type == 'spatial':
-                data = json.loads(data)
-                try:
-                    record_dict['east'] = data['east']
-                    record_dict['north'] = data['north']
-                except:
-                    record_dict['east'] = []
-                    record_dict['north'] = []
-            else:
-                record_dict[e.element_type] = data
-        # record_dict['collection'] = self.set_spec
-        record_dict['site_url'] = [self.get_absolute_url()]
-        # return self.sort_metadata_dict(record_dict)
+            etype = e.element_type.replace('.', '_')
+            edata = e.element_data
+            if etype == 'spatial':
+                edata = json.loads(edata)      
+            try:
+                record_dict[etype].append(edata)
+            except KeyError: # no key yet, make one and assign a new data list
+                record_dict[etype] = [edata]     
+        
+        record_dict['collection'] = [self.set_spec]
+        record_dict['site_url'] = [self.get_absolute_url()] 
         return record_dict
 
-    """Function to get the coordinates of the element to plot in map """
+    
 
     def get_coordinates(self, json_position):
+        """Function to get the coordinates of the element to plot in map """
         coords = {
             "lat": json_position[0],
             "lng": json_position[1]

@@ -17,10 +17,11 @@ class HomeView(MapDataMixin, TemplateView):
     queryset = None
 
     def get_context_data(self, **kwargs):
+        
         # Map mixin needs queryset variable set.
         self.queryset = Record.objects.filter(data__element_type='spatial')
-        
-        context = super(HomeView, self).get_context_data(**kwargs)
+       
+        context = super(HomeView, self).get_context_data(**kwargs)      
         # The root filter.
         metadata = MetadataElement.objects.all()
         

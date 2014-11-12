@@ -1,8 +1,7 @@
 # mixins.py
-from collections import namedtuple
 import json
 
-from olacharvests.models import MetadataElement, Record
+from olacharvests.models import MetadataElement, Record, Collection,  Plot
 
 """NOTE TO self
 List comprehensions are great:
@@ -13,8 +12,7 @@ tally.update(i.element_data for i in MetadataElement.objects.filter(element_type
 See changes below for examples of list comprehensions.
 """
 
-""" A namedtuple to construct unique points to plot """
-Plot = namedtuple('Plot',['north', 'east'])
+
 
 class MapDataMixin(object):
     """
@@ -29,13 +27,15 @@ class MapDataMixin(object):
         context['mapped_records'] = maplists['mapped_records']
         context['mapped_languages'] = maplists['mapped_languages']
         context['mapped_plots']= maplists['mapped_plots']
-
+        context['mapped_collections'] = maplists['mapped_collections']
+        
         return context
 
     def make_map_lists(self, queryset):
         mapped_plots = set()
         mapped_languages = set()
         mapped_records = []
+        mapped_collections = []
 
         for record in queryset: 
             mapped_data = [json.loads(i.element_data) for i in record.get_metadata_item('spatial')]
@@ -44,12 +44,16 @@ class MapDataMixin(object):
             mapped_languages |= set([i.element_data for i in record.get_metadata_item('subject.language')])   
             
             mapped_records.append(record.as_dict())
-
+                    
         mapped_plots = self.make_json_map_plots(mapped_plots)
+
+        mapped_collections = [i.as_dict() for i in Collection.objects.all()]
+
         maplists = {}
         maplists['mapped_records'] = sorted(mapped_records)
         maplists['mapped_languages'] = sorted(mapped_languages)
-        maplists['mapped_plots']= unicode(mapped_plots)
+        maplists['mapped_plots']= mapped_plots
+        maplists['mapped_collections'] = mapped_collections
 
         return maplists
 
@@ -72,6 +76,7 @@ class MapDataMixin(object):
             return json.dumps( plots ) # jsonify for google maps js client (DOM).
         except:
             return []
+
 
 
 class RecordSearchMixin(object):
