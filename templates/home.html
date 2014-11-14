@@ -45,7 +45,7 @@
 				{% for i in mapped_collections %}
 			 		<div class="mapped_record_selector
 			 			{% for j in i.map_plots %}
-			 				coord{{ j.1|cut:'.'|slice:":6" }}_{{ j.0|cut:'.'|slice:":6" }}
+			 				coord{{ j.north|cut:'.'|slice:":6" }}_{{ j.east|cut:'.'|slice:":6" }}
 			 			{% endfor %}
 			 			{% for j in i.languages %}
 			 				{{ j }}
@@ -57,10 +57,10 @@
 							{% for j in i.languages %} {{ j }} {% endfor %}
 						">
 						<input class="latitude" type="hidden" name="latitude" value="
-							{% for j in i.map_plots %} {{ j.1 }} {% endfor %}
+							{% for j in i.map_plots %} {{ j.north }} {% endfor %}
 						">
 						<input class="longitude" type="hidden" name="longitude" value="
-							{% for j in i.map_plots %} {{ j.0 }} {% endfor %}
+							{% for j in i.map_plots %} {{ j.east }} {% endfor %}
 						">
 						<input class="collection" type="hidden" name="collection" value="{{ i.name }}">
 						<input class="site_url" type="hidden" name="site_url" value="{{ i.site_url }}">

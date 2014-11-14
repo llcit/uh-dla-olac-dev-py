@@ -56,7 +56,9 @@ class OLACUtil(object):
         repo_cache = RepositoryCache.objects.all()[0]
         site = DlaSiteUtil()
         repo_cache.mapped_data_list = site.make_map_plots(Record.objects.all())
-        repo_cache.mapped_collection_data_list = json.dumps(site.make_map_plot_collections())
+        repo_cache.mapped_collection_data_list = json.dumps(
+            site.make_map_plot_collections()
+            )
         repo_cache.save()
 
         pass
@@ -193,42 +195,35 @@ class DlaSiteUtil(object):
     def make_map_plots(self, queryset):
         mapped_plots = set()
         for record in queryset: 
-            mapped_data = [json.loads(i.element_data) for i in record.get_metadata_item('spatial')]
-            [ mapped_plots.add(Plot(i['east'], i['north'])) for i in mapped_data ]    
-                      
-        return self.make_json_map_plots(mapped_plots)
+            mapped_plots.add(record.get_map_plot())
+
+        return self.make_json_map_plots(list(mapped_plots))
 
     def make_map_plot_collections(self):
         """
         Returns a tuple ([name, site url, [languages] ], [Plots])
         """
         mapped_collections = [i for i in Collection.objects.all() if i.list_map_plots()]
-        
-        mapped_collections = [{
-                    'name':        unicode(i), 
-                    'site_url':     i.get_absolute_url(), 
-                    'languages':    i.list_languages(),
-                    'map_plots':    i.list_map_plots()
-                    }         
-                    for i in mapped_collections
-                    ]
+
+        # Very elaborate list comprehension...
+        mapped_collections = [
+            {
+                'name':        unicode(i), 
+                'site_url':     i.get_absolute_url(), 
+                'languages':    i.list_languages(),
+                'map_plots':    [j._asdict() for j in i.list_map_plots()]
+            }         
+            for i in mapped_collections
+        ]
         return mapped_collections
 
-    def make_map_plot(self, json_position):
-        """
-        Create a Plot (namedtuple) from a json representation of metaelement coverage data e.g. [u'7.4278', u'134.5495']
-        """
-        try:
-            return Plot(json_position['north'], json_position['east'])
-        except:
-            return None
 
     def make_json_map_plots(self, plots):
         """
-        Create a dictionary for each Plot then encode as json string.
+        Create a dictionary for each in the Plot list then encode as json string.
         """
         try:
-            plots = [ plot._asdict() for plot in list(plots) ]
+            plots = [ plot._asdict() for plot in plots ]
             return json.dumps( plots ) # jsonify for google maps js client (DOM).
         except:
             return []

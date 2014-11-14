@@ -95,13 +95,10 @@ class Collection(TimeStampedModel):
         return self.record_set.all()
 
     def list_map_plots(self):
-        """ Returns a list of Plot tuples pruned from records in this collection. """
+        """ Returns a list of Plot tuples pruned from records in a collection. """
         plots = set()
         for record in self.list_records():
-            mapped_data = [json.loads(i.element_data)
-                           for i in record.get_metadata_item('spatial')]
-            [plots.add(Plot(i['east'], i['north'])) for i in mapped_data]
-
+            plots.add(record.get_map_plot() or None)
         return list(plots)
 
     def list_languages(self):
@@ -201,6 +198,14 @@ class Record(TimeStampedModel):
                 record_dict[etype] = [edata]
 
         return record_dict
+
+    def get_map_plot(self):
+        """ Returns a Plot namedtuple object or None if no map data assigned to this record """  
+        map_data = self.get_metadata_item('spatial')
+        if not map_data:
+            return None
+        plot = json.loads(map_data[0].element_data)
+        return Plot(plot['north'], plot['east']) 
 
     def make_update(self, datestamp_str):
         newdate = datetime.datetime.strptime(datestamp_str, '%Y-%m-%d').date()
