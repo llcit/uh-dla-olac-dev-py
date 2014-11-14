@@ -5,11 +5,10 @@ from collections import OrderedDict
 from django.utils.text import slugify
 from collections import namedtuple
 
-import json
-import operator
+import json, operator, datetime
 
 """ A namedtuple to handle unique points to plot """
-Plot = namedtuple('Plot',['north', 'east'])
+Plot = namedtuple('Plot', ['north', 'east'])
 
 
 class Repository(TimeStampedModel):
@@ -37,7 +36,7 @@ class Repository(TimeStampedModel):
         else:
             self.slug = slugify(unicode(self.id))
         super(Repository, self).save(*args, **kwargs)
-    
+
     def list_collections(self):
         return self.collection_set.all()
 
@@ -46,10 +45,10 @@ class Repository(TimeStampedModel):
 
     def set_info_item(self, metadata_element):
         element = ArchiveMetadataElement(
-            repository = self,
-            element_type = metadata_element.fieldname,
-            element_data = metadata_element.data
-            )
+            repository=self,
+            element_type=metadata_element.fieldname,
+            element_data=metadata_element.data
+        )
         element.save()
         return element
 
@@ -99,18 +98,20 @@ class Collection(TimeStampedModel):
         """ Returns a list of Plot tuples pruned from records in this collection. """
         plots = set()
         for record in self.list_records():
-            mapped_data = [json.loads(i.element_data) for i in record.get_metadata_item('spatial')]
-            [ plots.add(Plot(i['east'], i['north'])) for i in mapped_data ] 
+            mapped_data = [json.loads(i.element_data)
+                           for i in record.get_metadata_item('spatial')]
+            [plots.add(Plot(i['east'], i['north'])) for i in mapped_data]
 
         return list(plots)
 
     def list_languages(self):
         """ Returns a list of Plot tuples pruned from records in this collection. """
         languages = set()
-        
+
         for record in self.list_records():
-            language_data = [i.element_data for i in record.get_metadata_item('subject.language')]
-            [ languages.add(i) for i in language_data ] 
+            language_data = [
+                i.element_data for i in record.get_metadata_item('subject.language')]
+            [languages.add(i) for i in language_data]
 
         return list(languages)
 
@@ -151,10 +152,10 @@ class Record(TimeStampedModel):
 
     def set_metadata_item(self, metadata_element):
         element = MetadataElement(
-            record = self,
-            element_type = metadata_element.fieldname,
-            element_data = metadata_element.data
-            )
+            record=self,
+            element_type=metadata_element.fieldname,
+            element_data=metadata_element.data
+        )
 
         element.save()
         return element
@@ -176,8 +177,6 @@ class Record(TimeStampedModel):
 
         return json_metadata
 
-    
-
     def sort_metadata_dict(self, record_dict):
         """Sort record dictionary by key"""
         return OrderedDict(sorted(record_dict.items(), key=lambda t: t[0]))
@@ -185,31 +184,28 @@ class Record(TimeStampedModel):
     def as_dict(self):
         """ Returns a dictionary of the record data as k,v = {element type: element data list}"""
         record_dict = {}
+
+        record_dict['collection'] = [self.set_spec]
+        record_dict['site_url'] = [self.get_absolute_url()]
+        record_dict['datestamp'] = [self.datestamp]
+
         elements = self.data.all().order_by('element_type')
         for e in elements:
             etype = e.element_type.replace('.', '_')
             edata = e.element_data
             if etype == 'spatial':
-                edata = json.loads(edata)      
+                edata = json.loads(edata)
             try:
                 record_dict[etype].append(edata)
-            except KeyError: # no key yet, make one and assign a new data list
-                record_dict[etype] = [edata]     
-        
-        record_dict['collection'] = [self.set_spec]
-        record_dict['site_url'] = [self.get_absolute_url()] 
+            except KeyError:  # no key yet, make one and assign a new data list
+                record_dict[etype] = [edata]
+
         return record_dict
 
-    
-
-    def get_coordinates(self, json_position):
-        """Function to get the coordinates of the element to plot in map """
-        coords = {
-            "lat": json_position[0],
-            "lng": json_position[1]
-        }
-        print coords
-        return coords
+    def make_update(self, datestamp_str):
+        newdate = datetime.datetime.strptime(datestamp_str, '%Y-%m-%d').date()
+        curdate = datetime.datetime.strptime(self.datestamp, '%Y-%m-%d').date()
+        return newdate > curdate
 
     def __unicode__(self):
         title = self.get_metadata_item('title')[0].element_data
@@ -217,6 +213,7 @@ class Record(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse('item', args=[str(self.id)])
+
 
 class MetadataElement(models.Model):
 
@@ -231,13 +228,15 @@ class MetadataElement(models.Model):
     def get_absolute_url(self):
         pass  # return reverse('collection', args=[str(self.id)])
 
+
 class ArchiveMetadataElement(models.Model):
 
     """
     A archive informationtuple containing an 
     element_type (dublin core/olac) and its data
     """
-    repository = models.ForeignKey(Repository, null=True, related_name='archive_data')
+    repository = models.ForeignKey(
+        Repository, null=True, related_name='archive_data')
     element_type = models.CharField(max_length=256)
     element_data = models.TextField(default='')
 
@@ -246,4 +245,3 @@ class ArchiveMetadataElement(models.Model):
 
     def get_absolute_url(self):
         pass  # return reverse('collection', args=[str(self.id)])
-

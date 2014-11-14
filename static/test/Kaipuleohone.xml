@@ -19368,7 +19368,7 @@ Documentation &amp; Conservation 3:2, 2009</dc:description>
           <dcterms:bibliographicCitation>Van Way, John, Van Way, John, Bzangpo, Bkrashis; 2012-05-24; FLEx lexical database XML export on 2013-04-30.; document; Kaipuleohone University of Hawai'i Digital Language Archive;http://hdl.handle.net/10125/27684.</dcterms:bibliographicCitation>          <dc:contributor xsi:type="olac:role" olac:code="researcher">Van Way, John</dc:contributor>
           <dc:contributor xsi:type="olac:role" olac:code="depositor">Van Way, John</dc:contributor>
           <dc:contributor xsi:type="olac:role" olac:code="consultant">Bzangpo, Bkrashis</dc:contributor>
-          <dcterms:spatial xsi:type="dcterms:Point">east=30.939924; north=100.315246</dcterms:spatial>
+          <dcterms:spatial xsi:type="dcterms:Point">north=30.939924; east=100.315246</dcterms:spatial>
           <dc:coverage xsi:type="dcterms:ISO3166">CN</dc:coverage>
           <dc:date xsi:type="dcterms:W3CDTF">2013-04-30</dc:date>
           <dc:description>FLEx lexical database XML export on 2013-04-30.</dc:description>

@@ -41,7 +41,7 @@ class HomeView(MapDataMixin, TemplateView):
 
         # Create collections list
         context['collections'] = Collection.objects.all().order_by('name')
-
+        print 'Context done.'
         return context
 
 class RepositoryView(DetailView):

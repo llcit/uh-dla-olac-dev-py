@@ -175,10 +175,14 @@ class OLACClient(object):
             '{http://www.w3.org/2001/XMLSchema-instance}type') or ''
         olaccode = element.get(
             '{http://www.language-archives.org/OLAC/1.1/}code') or ''
-        # attributes = {}
-        # for key, value in element.attrib.items():
-        #     attributes[self.strip_namespace_string(key)] = value
-
+        
+        # Reformat the point data as a json string:
+        # Format: {"east": "113.0901109", "north": "3.19057"}
+        if tag == 'spatial':
+            text = text.replace(' ', '').split(';')
+            text = [text[i].split('=') for i in range(len(text))]
+            text = {text[0][0]:text[0][1], text[1][0]:text[1][1]}
+            text = json.dumps(text)
         try:
             tag = '%s.%s' % (tag, meta_type_map[dctype])
             # Add code as value for element or append to tag when node text exists.
@@ -188,9 +192,9 @@ class OLACClient(object):
                 text = olaccode
             else:
                 tag = '%s.%s' % (tag, olaccode)
+
         except:
             pass
-
         return OlacMetadataItem(tag, text)
 
     def tostring(self, record):

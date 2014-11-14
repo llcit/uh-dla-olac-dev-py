@@ -4,36 +4,10 @@ from oaipmh.metadata import MetadataRegistry, oai_dc_reader
 from collections import Counter, namedtuple
 import json
 
-from olacharvests.models import Repository, Collection, Record, MetadataElement
+from olacharvests.models import Repository, Collection, Record, MetadataElement, Plot
 from olacharvests.olac import OLACClient, OlacMetadataItem
 
 from .models import RepositoryCache
-
-"""
-
-from collections import *
-from dlasite.models import *
-from olacharvests.models import *
-metadata = MetadataElement.objects.all()
-languages = metadata.filter(element_type='subject.language')
-lf = Counter()
-lf.update([x.element_data for x in languages])
-
-contributors = metadata.filter(element_type__startswith='contributor.')
-cf = Counter()
-cf.update([x.element_data for x in contributors])
-
-mapped_data = metadata.filter(element_type='spatial')
-points = Counter
-
-
-from dlasite.utils import OLACUtil
-from olacharvests.olac import *
-util = OLACUtil('http://localhost:8000/static/test/Kaipuleohone.xml')
-repo = util.get_repository()
-jrepo = util.get_repository_asdict()
-"""
-
 
 class OLACUtil(object):
 
@@ -74,22 +48,39 @@ class OLACUtil(object):
     def create_repository(self):
         pass
 
-    def update_repository_cache(self, records):
+    def update_repository_cache(self):
         # metadata = MetadataElement.objects.all()
         # languages = metadata.filter(element_type='subject.language')
         # language_freq = Counter()
         # language_freq.update([x.element_data for x in languages])
+        repo_cache = RepositoryCache.objects.all()[0]
+        site = DlaSiteUtil()
+        repo_cache.mapped_data_list = site.make_map_plots(Record.objects.all())
+        repo_cache.mapped_collection_data_list = json.dumps(site.make_map_plot_collections())
+        repo_cache.save()
 
         pass
 
+    def update_record_metadata(self, record, node):
+        # Clear existing metadata for this record.
+        record.data.all().delete()
+
+        # Replenish metadata element data for the record from xml harvest
+        # NOTE: reads off olac.OlacMetadataItem namedtuples
+        for m in node.metadata:
+            record.set_metadata_item(m)
+
+        return
+
     def harvest_records(self):
         index = 0
+        length = 0
         if self.client:
             records = self.get_record_list()
             length = len(records)
             
             for node in records:
-                print '%s/%s' % (index+1, length)
+                # DEBUGGING -> print '%s/%s' % (index+1, length)
 
                 # Get an existing or create a new collection object
                 try:
@@ -105,38 +96,33 @@ class OLACUtil(object):
                 try:
                     record = Record.objects.get(
                         identifier=node.header['identifier'])
+
+                    datestr = unicode(node.header['datestamp'])
+                    # if record.make_update(datestr):
+                    record.datestamp = datestr
+                    record.set_spec = collection
+                    record.save()
+                    self.update_record_metadata(record, node)
+                    index = index + 1
+
                 except Record.DoesNotExist:
                     record = Record(identifier=node.header['identifier'])
+                    record.datestamp = unicode(node.header['datestamp'])
+                    record.set_spec = collection
+                    record.save()
+                    self.update_record_metadata(record, node)
+                    print 'new record added!'
+                    index = index + 1
+                
                 except KeyError:
                     raise KeyError(str( ('Record node [%s] does not have an identifier key. Please validate xml at %s')% (
-                        index, cleaned_data.get('base_url')) ))
-
-                record.datestamp = node.header['datestamp'],
-                record.set_spec = collection
-                record.save()
-
-                
-                # Clear existing metadata for this record.
-                record.data.all().delete()
-
-                # Replenish metadata element data for the record from xml harvest
-                # NOTE: reads off olac.OlacMetadataItem namedtuples
-                for m in node.metadata:
-
-                    if m.fieldname == 'spatial':
-                        s = m.data.replace(' ', '').split(';')
-                        s = [s[i].split('=') for i in range(len(s))]
-                        s = {s[0][0]:s[0][1], s[1][0]:s[1][1]}
-                        m = OlacMetadataItem(m.fieldname, json.dumps(s))
-
-                    record.set_metadata_item(m)
-
-                index = index + 1
+                        index, self.client.root)))
+    
 
         else:
             raise Exception('Please instantiate a OLACUtil client first.')
         
-        return index
+        return '%s/%s records updated.' % (index, length)
 
 class OAIUtil(object):
     """
@@ -176,4 +162,77 @@ class OAIUtil(object):
             return None
 
         return queryset
+
+class DlaSiteUtil(object):
+    def __init__(self):
+        pass
+
+    def make_map_lists(self, queryset):
+        mapped_plots = set()
+        mapped_languages = set()
+        mapped_records = []
+        mapped_collections = []
+
+        for record in queryset: 
+            mapped_data = [json.loads(i.element_data) for i in record.get_metadata_item('spatial')]
+            
+            [ mapped_plots.add(Plot(i['east'], i['north'])) for i in mapped_data ]    
+            mapped_languages |= set([i.element_data for i in record.get_metadata_item('subject.language')])   
+            
+            mapped_records.append(record.as_dict())
+                    
+        mapped_plots = self.make_json_map_plots(mapped_plots)
+
+        maplists = {}
+        maplists['mapped_records'] = sorted(mapped_records)
+        maplists['mapped_languages'] = sorted(mapped_languages)
+        maplists['mapped_plots']= mapped_plots
+
+        return maplists
+
+    def make_map_plots(self, queryset):
+        mapped_plots = set()
+        for record in queryset: 
+            mapped_data = [json.loads(i.element_data) for i in record.get_metadata_item('spatial')]
+            [ mapped_plots.add(Plot(i['east'], i['north'])) for i in mapped_data ]    
+                      
+        return self.make_json_map_plots(mapped_plots)
+
+    def make_map_plot_collections(self):
+        """
+        Returns a tuple ([name, site url, [languages] ], [Plots])
+        """
+        mapped_collections = [i for i in Collection.objects.all() if i.list_map_plots()]
+        
+        mapped_collections = [{
+                    'name':        unicode(i), 
+                    'site_url':     i.get_absolute_url(), 
+                    'languages':    i.list_languages(),
+                    'map_plots':    i.list_map_plots()
+                    }         
+                    for i in mapped_collections
+                    ]
+        return mapped_collections
+
+    def make_map_plot(self, json_position):
+        """
+        Create a Plot (namedtuple) from a json representation of metaelement coverage data e.g. [u'7.4278', u'134.5495']
+        """
+        try:
+            return Plot(json_position['north'], json_position['east'])
+        except:
+            return None
+
+    def make_json_map_plots(self, plots):
+        """
+        Create a dictionary for each Plot then encode as json string.
+        """
+        try:
+            plots = [ plot._asdict() for plot in list(plots) ]
+            return json.dumps( plots ) # jsonify for google maps js client (DOM).
+        except:
+            return []
+
+
+
         

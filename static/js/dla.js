@@ -224,7 +224,7 @@ jQuery(function($) {
 
         // Init Google map (or not)
         initialize();
-        paginator();
+        // paginator();
     });
 
 });

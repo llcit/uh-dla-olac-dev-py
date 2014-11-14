@@ -97,7 +97,7 @@
           <dc:description>Kayardild Grammar (ISBN 3110127954)</dc:description>
           <dc:publisher>Berlin - Mouton de Gruyter</dc:publisher>
           <dc:contributor xsi:type="olac:role" olac:code="author">Nicholas Evans</dc:contributor>
-          <dcterms:spatial xsi:type="dcterms:Point">north=99.4278; east=88.5495</dcterms:spatial>
+          <dcterms:spatial xsi:type="dcterms:Point">north=3.19057; east=113.0901109</dcterms:spatial>
           <dc:format>hardcover, 837 pages</dc:format>
           <dc:relation>related to ISBN 0646119966</dc:relation>
           <dc:coverage>Australia</dc:coverage>
@@ -109,8 +109,8 @@
           
     <oai:record>
       <oai:header>
-        <oai:identifier>oai:kayardild.lt.cs.mu.oz.au:02</oai:identifier>
-        <oai:datestamp>2004-07-06</oai:datestamp>
+        <oai:identifier>oai:kayardild.lt.cs.mu.oz.au:9898989</oai:identifier>
+        <oai:datestamp>2004-07-08</oai:datestamp>
         <oai:setSpec>col_10125_24084</oai:setSpec>
       </oai:header>
       <oai:metadata>
@@ -146,7 +146,7 @@
           <dc:contributor xsi:type="olac:role" olac:code="recorder">Berg, Esther</dc:contributor>
           <dc:contributor xsi:type="olac:role" olac:code="researcher">Berg, Esther</dc:contributor>
           <dc:contributor xsi:type="olac:role" olac:code="depositor">Berg, Esther</dc:contributor>
-          <dcterms:spatial xsi:type="dcterms:Point">north=7.4278; east=134.5495</dcterms:spatial>
+          <dcterms:spatial xsi:type="dcterms:Point">east=100.315246; north=30.939924</dcterms:spatial>
           <dc:coverage xsi:type="dcterms:ISO3166">PW</dc:coverage>
           <dc:coverage xsi:type="dcterms:ISO3166">PW</dc:coverage>
           <dc:date xsi:type="dcterms:W3CDTF">2013-10-14</dc:date>

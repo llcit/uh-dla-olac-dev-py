@@ -12,6 +12,7 @@ from olacharvests.olac import OLACClient
 from olacharvests.models import Repository, Collection, Record, MetadataElement
 
 from .utils import OLACUtil, OAIUtil
+from .models import RepositoryCache
 
 
 class CreateRepositoryForm(ModelForm):
@@ -38,6 +39,9 @@ class CreateRepositoryForm(ModelForm):
         for i in self.cleaned_data['repo_meta']:
             repository.set_info_item(i)
 
+        repo_cache = RepositoryCache(repository=repository)
+        repo_cache.save()
+
         return repository
 
     class Meta:
@@ -52,6 +56,8 @@ class HarvestRepositoryForm(ModelForm):
         try:
             olac_client = OLACUtil(cleaned_data.get('base_url'))
             olac_client.harvest_records()
+            olac_client.update_repository_cache()
+
         except ValidationError:
             raise ValidationError(str( ('Repository at %s is invalid.')% cleaned_data.get('base_url') ))
 
