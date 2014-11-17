@@ -49,16 +49,25 @@ class OLACUtil(object):
         pass
 
     def update_repository_cache(self):
-        # metadata = MetadataElement.objects.all()
-        # languages = metadata.filter(element_type='subject.language')
-        # language_freq = Counter()
-        # language_freq.update([x.element_data for x in languages])
-        repo_cache = RepositoryCache.objects.all()[0]
         site = DlaSiteUtil()
+        metadata = MetadataElement.objects.all()
+        
+        languages = metadata.filter(element_type='subject.language')
+        language_freq = Counter()
+        language_freq.update([x.element_data for x in languages])
+        
+        contributors = metadata.filter(element_type__startswith='contributor')
+        contributor_freq = Counter()
+        contributor_freq.update([x.element_data for x in contributors])
+
+        repo_cache = RepositoryCache.objects.all()[0] # There should be only one repository cache object in db.
+        repo_cache.language_list = json.dumps(language_freq)
+        repo_cache.contributor_list = json.dumps(contributor_freq)
         repo_cache.mapped_data_list = site.make_map_plots(Record.objects.all())
         repo_cache.mapped_collection_data_list = json.dumps(
             site.make_map_plot_collections()
             )
+        
         repo_cache.save()
 
         pass
@@ -169,29 +178,6 @@ class DlaSiteUtil(object):
     def __init__(self):
         pass
 
-    def make_map_lists(self, queryset):
-        mapped_plots = set()
-        mapped_languages = set()
-        mapped_records = []
-        mapped_collections = []
-
-        for record in queryset: 
-            mapped_data = [json.loads(i.element_data) for i in record.get_metadata_item('spatial')]
-            
-            [ mapped_plots.add(Plot(i['east'], i['north'])) for i in mapped_data ]    
-            mapped_languages |= set([i.element_data for i in record.get_metadata_item('subject.language')])   
-            
-            mapped_records.append(record.as_dict())
-                    
-        mapped_plots = self.make_json_map_plots(mapped_plots)
-
-        maplists = {}
-        maplists['mapped_records'] = sorted(mapped_records)
-        maplists['mapped_languages'] = sorted(mapped_languages)
-        maplists['mapped_plots']= mapped_plots
-
-        return maplists
-
     def make_map_plots(self, queryset):
         mapped_plots = set()
         for record in queryset: 
@@ -220,7 +206,7 @@ class DlaSiteUtil(object):
 
     def make_json_map_plots(self, plots):
         """
-        Create a dictionary for each in the Plot list then encode as json string.
+        Create a dictionary for each plot tuble in the Plot list then encode as json string.
         """
         try:
             plots = [ plot._asdict() for plot in plots ]

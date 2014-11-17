@@ -80,6 +80,7 @@ class CollectionsUpdateForm(ModelForm):
         try:
             oai_client = OAIUtil(cleaned_data.get('request_url'))
             oai_client.update_oai_collection_info()
+            OLACUtil.update_repository_cache()
         
         except:
             raise ValidationError(str( ('OAI Repository at %s is invalid.')% cleaned_data.get('request_url') ))

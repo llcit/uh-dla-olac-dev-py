@@ -18,23 +18,14 @@ See changes below for examples of list comprehensions.
 class MapDataMixin(object):
     """
     Populates additional lists for google map display and browsing.
-    Requires a queryset of Record objects. 
+    May not require a queryset of Record objects. TODO: need to check this for dynamic list building.
     """
 
     def get_context_data(self, **kwargs):
         context = super(MapDataMixin, self).get_context_data(**kwargs)
-        site = DlaSiteUtil()
-        # maplists = site.make_map_lists(self.queryset)
-
-        # context['mapped_records'] = maplists['mapped_records']
-        # context['mapped_languages'] = maplists['mapped_languages']
-        # context['mapped_plots']= maplists['mapped_plots']
-        # context['mapped_collections'] = maplists['mapped_collections']
         repo_cache = RepositoryCache.objects.get()
-        context['mapped_plots']= repo_cache.mapped_data_list
+        context['mapped_plots']= unicode(repo_cache.mapped_data_list)
         context['mapped_collections'] = json.loads(repo_cache.mapped_collection_data_list)
-        
-        print 'MapDataMixin done.', repo_cache.mapped_collection_data_list
         return context
 
 class RecordSearchMixin(object):

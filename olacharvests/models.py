@@ -8,7 +8,7 @@ from collections import namedtuple
 import json, operator, datetime
 
 """ A namedtuple to handle unique points to plot """
-Plot = namedtuple('Plot', ['north', 'east'])
+Plot = namedtuple('Plot', ['east', 'north'])
 
 
 class Repository(TimeStampedModel):
@@ -205,7 +205,7 @@ class Record(TimeStampedModel):
         if not map_data:
             return None
         plot = json.loads(map_data[0].element_data)
-        return Plot(plot['north'], plot['east']) 
+        return Plot(plot['east'], plot['north']) 
 
     def make_update(self, datestamp_str):
         newdate = datetime.datetime.strptime(datestamp_str, '%Y-%m-%d').date()

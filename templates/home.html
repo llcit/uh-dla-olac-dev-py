@@ -43,7 +43,7 @@
 			<div class="mapitem_container mapped_collection">
 				
 				{% for i in mapped_collections %}
-			 		<div class="mapped_record_selector
+			 		<div class="mapped_collection_selector
 			 			{% for j in i.map_plots %}
 			 				coord{{ j.north|cut:'.'|slice:":6" }}_{{ j.east|cut:'.'|slice:":6" }}
 			 			{% endfor %}

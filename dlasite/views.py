@@ -14,34 +14,17 @@ from .forms import CreateRepositoryForm, HarvestRepositoryForm, CollectionsUpdat
 
 class HomeView(MapDataMixin, TemplateView):
     template_name = 'home.html'
-    queryset = None
-
-    def get_context_data(self, **kwargs):
-        
+    
+    def get_context_data(self, **kwargs):     
         # Map mixin needs queryset variable set.
-        self.queryset = Record.objects.filter(data__element_type='spatial')
-       
+        # self.queryset = Record.objects.filter(data__element_type='spatial')     
         context = super(HomeView, self).get_context_data(**kwargs)      
-        # The root filter.
-        metadata = MetadataElement.objects.all()
+        repo_cache = RepositoryCache.objects.all()[0]
+        context['languages'] = repo_cache.language_list
+        context['contributors'] = repo_cache.contributor_list
         
-        # Create dictionary with language frequency counts using Counter
-        language_frequencies = Counter()
-        language_frequencies.update(
-            i.element_data for i in metadata.filter(element_type='subject.language'))
-        context['languages'] = sorted(
-            language_frequencies.items(), key=operator.itemgetter(1), reverse=True)
-
-        # Create dictionary with contributor frequency counts using Counter
-        contributor_frequencies = Counter()
-        contributor_frequencies.update(
-            i.element_data for i in metadata.filter(element_type__startswith='contributor'))
-        context['contributors'] = sorted(
-            contributor_frequencies.items(), key=operator.itemgetter(1), reverse=True)
-
         # Create collections list
         context['collections'] = Collection.objects.all().order_by('name')
-        print 'Context done.'
         return context
 
 class RepositoryView(DetailView):
