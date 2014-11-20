@@ -29,7 +29,6 @@ jQuery(function($) {
         map.setZoom(2);
         $("#current_filter").html("");
         $("#filter_reset_btn").css( "display", "none");
-        $(".map_language_selected").removeClass("map_language_selected");   
     });
 
     // language filter
@@ -47,11 +46,13 @@ jQuery(function($) {
         }        
     });
 
-    // show infowindow in the google map for a selected record in list of mapped records
+    // show infowindow in the google map for a selected collection in list of mapped collections
     $(".mapped_collection_selector").click(function () {
         // Toggle infowindow control from dom elements.
-        if( $(this).hasClass("map_collection_selected") ) {
-            $(this).removeClass("map_collection_selected");
+        if( $(this).hasClass("filter_selected") ) {
+            $(this).removeClass("filter_selected");
+            map.setZoom(2);
+            $("#filter_reset_btn").css( "display", "none");
             infowindow.close(map);
         } else {
             var lat = $(this).children(".latitude").val();
@@ -61,7 +62,7 @@ jQuery(function($) {
             var collection_name = $(this).children(".collection").val();
             var collection_url = $(this).children(".site_url").val();
             var languages = $(this).children(".language").val();
-            var display_text = '<p><b>Collection: </b><a href=\"' + collection_url + '\">' + collection_name + '</a>' + '<br><b>Language: </b> ' + languages + '<br><b>Coordinates: </b>east: ' + lat + ', north: ' + lng + '</p>';
+            var display_text = '<p><b>Collection: </b><a href=\"' + collection_url + '\">' + collection_name + '</a>' + '<br><b>Language: </b> ' + languages + '<br><b>Coordinates: </b>Latitude: ' + lat + ', Longitude: ' + lng + '</p>';
 
             
             var infowindowOptions = {
@@ -73,8 +74,42 @@ jQuery(function($) {
             infowindow.open(map);
 
 
-            $(".map_collection_selected").removeClass("map_collection_selected");
-            $(this).addClass("map_collection_selected");
+            $(".filter_selected").removeClass("filter_selected");
+            $(this).addClass("filter_selected");
+            $("#filter_reset_btn").css( "display", "inline");
+        }
+    });
+
+    // show infowindow in the google map for a selected record in list of mapped records
+    $(".mapped_record_selector").click(function () {
+        // Toggle infowindow control from dom elements.
+        if( $(this).hasClass("filter_selected") ) {
+            $(this).removeClass("filter_selected");
+            $("#filter_reset_btn").css( "display", "none");
+            infowindow.close(map);
+        } else {
+            var lat = $(this).children(".latitude").val();
+            var lng = $(this).children(".longitude").val();
+            
+            // grab the relevant info from hidden inputs to display in infowindow
+            var collection_name = $(this).children(".collection").val();
+            var collection_url = $(this).children(".site_url").val();
+            var languages = $(this).children(".language").val();
+            var display_text = '<p><b>Collection: </b><a href=\"' + collection_url + '\">' + collection_name + '</a>' + '<br><b>Language: </b> ' + languages + '<br><b>Coordinates: </b>Latitude: ' + lat + ', Longitude: ' + lng + '</p>';
+
+            
+            var infowindowOptions = {
+                content: display_text,
+                position: {lat: parseFloat(lat), lng: parseFloat(lng)},
+                maxWidth: 200
+            };                    
+            infowindow.setOptions(infowindowOptions);
+            infowindow.open(map);
+
+
+            $(".filter_selected").removeClass("filter_selected");
+            $(this).addClass("filter_selected");
+            $("#filter_reset_btn").css( "display", "inline");
         }
     });
 
@@ -160,105 +195,7 @@ jQuery(function($) {
                 collection.slice(pivot ,collection.length).hide()  ; 
             }
         }
-
-        function initialize() {
-            if (json.length < 1){
-                $("#map-canvas").toggle();
-                $("#nogeotext").toggle();
-                $("#mapped_collection_selector").toggle();
-                return       
-            }
-
-            var mapPlots = [];
-            // See this link to understand why north is mapped to the x coordinate (latitude) and east is mapped to y coordinate (longitude)
-            // https://developers.google.com/maps/documentation/javascript/reference#LatLng
-            for (var i = 0; i<json.length; i++) {
-                mapPlots[i] = new google.maps.LatLng(json[i].north, json[i].east );
-                // console.log('Plot at: ' + "LAT: " + json[i].east + " LONG: " + json[i].north);
-                // console.log('Plot at: ' + mapPlots[i]);
-            }
-
-            if (typeof mapPlots[0] != 'undefined') {
-                // k=longitude (north)
-                // B=latitude (east)
-                var mapcenter = mapPlots[0]
-            } else {
-                var mapcenter = new google.maps.LatLng(0, 0);
-            }
-
-            var mapOptions = {
-                zoom: 2,
-                minZoom:1,
-                center: mapcenter,
-                mapTypeId: google.maps.MapTypeId.SATELLITE
-            };
-
-            map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-
-
-            for (var i = 0; i<mapPlots.length; i++) {
-                // Add a marker for each plot to the map.
-                var marker =  new google.maps.Marker({
-                      position: mapPlots[i],
-                      map: map,
-                });
-                
-                // Set up event listener for markers: when clicked will filter mapped records list.
-                google.maps.event.addListener(marker, 'click', function() {
-                    map.setZoom(12);
-                    map.setCenter(this.getPosition());
-
-                    // normalize the position strings with the dom class specified in mapped records.
-                    var latstr = String(this.getPosition().lat()).replace('.', '').slice(0,6);
-                    var lngstr = String(this.getPosition().lng()).replace('.', '').slice(0,6);
-                    
-                    // build string used to select relevant classes from mapped collections list
-                    var map_filter = ".coord"+lngstr +"_"+latstr;
-
-                    // grab the relevant info from hidden inputs to display in infowindow
-                    var collection_name = $(map_filter).first().children(".collection").val();
-                    var collection_url = $(map_filter).first().children(".site_url").val();
-                    var languages = $(map_filter).first().children(".language").val();
-                    var display_text = '<p><b>Collection: </b><a href=\"' + collection_url + '\">' + collection_name + '</a>' + '<br><b>Language: </b> ' + languages + '<br><b>Coordinates: </b>east: ' + this.getPosition().lat() + ', north: ' + this.getPosition().lng() + '</p>';
-
-                    
-                    var infowindowOptions = {
-                        content: display_text,
-                        position: this.getPosition(),
-                        maxWidth: 200
-                    };                    
-                    infowindow.setOptions(infowindowOptions);
-                    infowindow.open(map);
-
-                    // Display the reset button -- 'show all'
-                    $("#filter_reset_btn").css( "display", "inline");
-                    
-                    // Finally, let isotope do its magic.
-                    $container.isotope({ filter: map_filter });
-
-                });
-                        
-                        
-            }
-                 
-            infowindow = new google.maps.InfoWindow();
-
-            // set up infowindow to modify dom relevant dom elements when close button is clicked.
-            google.maps.event.addListener(infowindow, 'closeclick', function() {
-                $(".map_collection_selected").removeClass("map_collection_selected");
-            });
-
-            return map;
-        }
-
-        // Init Google map (or not)
-        initialize();
         paginator();
     });
 
 });
-
-
-
-
-// window.onload = loadScript;

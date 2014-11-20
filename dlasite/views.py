@@ -17,7 +17,7 @@ class HomeView(MapDataMixin, RepositoryInfoMixin, TemplateView):
     
     def get_context_data(self, **kwargs):     
         # Map mixin needs queryset variable set.
-        # self.queryset = Record.objects.filter(data__element_type='spatial')     
+             
         context = super(HomeView, self).get_context_data(**kwargs)      
         repo_cache = RepositoryCache.objects.all()[0]
         
@@ -85,7 +85,7 @@ class CollectionListView(RepositoryInfoMixin, ListView):
     model = Collection
     template_name = 'collection_list.html'
 
-class CollectionView(RepositoryInfoMixin, DetailView):
+class CollectionView(MapDataMixin, RepositoryInfoMixin, DetailView):
     model = Collection
     template_name = 'collection_view.html'
 
@@ -130,12 +130,22 @@ class CollectionsUpdateView(RepositoryInfoMixin, UpdateView):
         context['collection_list'] = Collection.objects.all()
         return context
 
-class ItemView(RepositoryInfoMixin, DetailView):
+class ItemView(MapDataMixin, RepositoryInfoMixin, DetailView):
     model = Record
     template_name = 'item_view.html'
 
     def get_context_data(self, **kwargs):
         context = super(ItemView, self).get_context_data(**kwargs)
+
+        d = self.get_object().set_spec.as_dict()
+        for k, v in d.items():
+            try: 
+                d[k] = ', '.join(v)
+            except:
+                d[k] = v[0]
+                pass
+        
+        context['collection_info'] = d
         context['item_data'] = self.get_object().as_dict()
         return context
 

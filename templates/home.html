@@ -164,17 +164,25 @@
 {% block js_script %}
 	<script type="text/javascript">
 		//Get the coordinates info and data from the records inside the DOM
-        // console.log({{ mapped_plots|safe }});
         var json = {{ mapped_plots|safe }};
+        if(json.length > 0){
+	 		var mapOptions = {
+			        zoom: 2,
+			        minZoom:1,
+			        center: {lat: 19.50056, lng: 155.50056}, // Center to Hawaii
+			        mapTypeId: google.maps.MapTypeId.HYBRID
+			};        	
+        }
+
     </script>
 {% endblock js_script %} 
   
 {% block js_include %} 
   <!--Google Map js libraries-->
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
-  <!-- <script type="text/javascript" src="https://www.google.com/jsapi"></script>  -->
+  
+  <!-- Local map init setup  -->
+  <script src="{% static 'js/map-init.js' %}"></script>
 
-  <!-- Local js -->
-  <script src="{% static 'js/dla.js' %}"></script>
 {% endblock js_include %}			
 

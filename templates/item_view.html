@@ -1,14 +1,61 @@
 <!-- item_view.html -->
 {% extends 'base.html' %}
+{% load staticfiles %}
 
 {% block page_header %}<small>{{ object }}</small>{% endblock page_header %}
 
 {% block content %}
-	<dl class="dl-horizontal">
-	{% for k,v in item_data.items %}
-		
-			<dt>{{ k }}</dt> 			
-			<dd>{% for j in v  %}{% if k == 'identifier' %} {{ j|urlize }} {% else %} {{ j }} {% endif %}{% endfor %}</dd>
-	{% endfor %}
-	</dl>		
+	<div class="row">
+		<div id="mapped_records_selector" class="col-md-6">		
+			<div class="row"><div class="col-md-12">
+				<legend>Details</legend>
+				<dl class="dl-horizontal">
+				{% for k,v in item_data.items %}
+					
+						<dt>{{ k }}</dt> 			
+						<dd>{% for j in v  %}{% if k == 'identifier' %} {{ j|urlize }} {% else %} {{ j }} {% endif %}{% endfor %}</dd>
+				{% endfor %}
+				</dl>		
+			</div></div>		
+		</div>
+		<!-- Google Map display panel -->
+		<div class="col-md-6">
+			<div class="row"><div class="col-md-12">
+				<legend>About the Collection</legend>
+				<dl class="dl-horizontal">
+				{% for k, v in collection_info.items %}
+					{% if v %}
+						<dt>{{ k }}</dt>
+						<dd>  {{ v }} </dd>
+					{% endif %}
+				{% endfor %}
+				</dl>
+			</div></div>
+			<div class="row"><div id="map-canvas" style="width: 100%"></div></div>
+		</div>
+	</div>
 {% endblock content %}
+
+{% block js_script %}
+	<script type="text/javascript">
+		//Get the coordinates info and data from the records inside the DOM
+        var json = {{ mapped_plots|safe }};
+        if(json.length > 0){
+	 		var mapOptions = {
+			        zoom: 12,
+			        minZoom:1,
+			        center: {lat: parseFloat(json[0].north), lng: parseFloat(json[0].east)}, // Center to first plot in list
+			        mapTypeId: google.maps.MapTypeId.HYBRID
+			};        	
+        }
+    </script>
+{% endblock js_script %}
+
+{% block js_include %} 
+  <!--Google Map js libraries-->
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+  <!-- // <script type="text/javascript" src="https://www.google.com/jsapi"></script> -->
+
+  <!-- Local js -->
+  <script src="{% static 'js/map-init.js' %}"></script>
+{% endblock js_include %}

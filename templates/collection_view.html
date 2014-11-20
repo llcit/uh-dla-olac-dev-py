@@ -8,35 +8,26 @@
 {% block content %}	
 
 	<div class="row">
-		<div class="col-md-12">
-			<!-- <h2>Globe Trekker</h2>	 -->
-		</div>
-
 		<!-- Google Map display panel -->
 		<div class="col-md-6">
 			<div class="row"><div id="map-canvas" style="width: 100%"></div></div>
-			<div class="row">
+			<div class="row"><div class="col-md-12">
 				<legend>About the Collection</legend>
 				<dl class="dl-horizontal">
 				{% for k, v in collection_info.items %}
-					<dt>{{ k }}</dt>
-					<dd> {{ v }}</dd>
+					{% if v %}
+						<dt>{{ k }}</dt>
+						<dd>  {{ v }} </dd>
+					{% endif %}
 				{% endfor %}
 				</dl>
-			</div>
+			</div></div>
 		</div>
 
 		<!-- Google Map view controller -->
-		<div id="mapped_records_selector" class="col-md-6">
-			
-			<!-- Mapped languages selector: filters mapped record selectors -->
-			<div class="row">
-				<div class="col-md-12"><button id="filter_reset_btn" type="button" class="btn">Show All</button></div>
-				<div class="col-md-12"></div>
-			</div>
-			
-			<div class="row">
-				<legend>Records {{ records|length }}</legend>
+		<div id="mapped_records_selector" class="col-md-6">		
+			<div class="row"><div class="col-md-12">
+				<legend>{{ records|length }} Records </legend>
 				<dl class="dl-horizontal">
 				{% for i in records %}
 				
@@ -45,7 +36,7 @@
 					<hr>
 				{% endfor %}
 				</dl>
-			</div>		
+			</div></div>		
 
 		</div>
 	</div>
@@ -55,15 +46,23 @@
 {% block js_script %}
 	<script type="text/javascript">
 		//Get the coordinates info and data from the records inside the DOM
-        // var json = {{ mapped_plots|safe }};
+        var json = {{ mapped_plots|safe }};
+        if(json.length > 0){
+	 		var mapOptions = {
+			        zoom: 12,
+			        minZoom:1,
+			        center: {lat: parseFloat(json[0].north), lng: parseFloat(json[0].east)}, // Center to first plot in list
+			        mapTypeId: google.maps.MapTypeId.HYBRID
+			};        	
+        }
     </script>
 {% endblock js_script %}
 
 {% block js_include %} 
   <!--Google Map js libraries-->
-  <!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script> -->
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+  <!-- // <script type="text/javascript" src="https://www.google.com/jsapi"></script> -->
 
   <!-- Local js -->
-  <!--<script src="{% static 'js/dla.js' %}"></script>-->
+  <script src="{% static 'js/map-init.js' %}"></script>
 {% endblock js_include %}
