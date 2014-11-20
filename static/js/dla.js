@@ -56,45 +56,21 @@ jQuery(function($) {
         } else {
             var lat = $(this).children(".latitude").val();
             var lng = $(this).children(".longitude").val();
-            var display_text = '<p><b>Collection: </b><a href=\"' + $(this).children(".site_url").val() + '\">' + $(this).children(".title").val() + '</a>' + 
-                '<br><b>Language: </b> ' + $(this).children(".language").val() + 
-                '<br><b>Coordinates: </b> ' + lat + ', ' + lng + '</p>';
             
-            var center = new google.maps.LatLng(lat, lng);
+            // grab the relevant info from hidden inputs to display in infowindow
+            var collection_name = $(this).children(".collection").val();
+            var collection_url = $(this).children(".site_url").val();
+            var languages = $(this).children(".language").val();
+            var display_text = '<p><b>Collection: </b><a href=\"' + collection_url + '\">' + collection_name + '</a>' + '<br><b>Language: </b> ' + languages + '<br><b>Coordinates: </b>east: ' + lat + ', north: ' + lng + '</p>';
+
+            
             var infowindowOptions = {
                 content: display_text,
-                position: center,
-                maxWidth: 150
-            };
-            
+                position: {lat: parseFloat(lat), lng: parseFloat(lng)},
+                maxWidth: 200
+            };                    
             infowindow.setOptions(infowindowOptions);
             infowindow.open(map);
-
-            // Add a marker for the plot to the map.
-            // var marker = new google.maps.Marker({
-            //       position: center,
-            //       map: map,
-            // });
-
-            // Set up event listener for markers: when clicked will filter mapped records list.
-            // google.maps.event.addListener(marker, 'click', function() {
-            //     map.setZoom(12);
-            //     map.setCenter(this.getPosition());
-
-            //     // normalize the position strings with the dom class specified in mapped records.
-            //     var latstr = String(this.getPosition().lat()).replace('.', '').slice(0,6);
-            //     var lngstr = String(this.getPosition().lng()).replace('.', '').slice(0,6);
-                
-            //     // build string used to select relevant classes from mapped records list
-            //     var record_filter = ".coord"+latstr +"_"+lngstr;
-            //     // console.log(record_filter);
-            //     // display the collection title currently being filtered / handle the button to reset filter
-            //     $("#filter_reset_btn").css( "display", "inline");
-            //     $("#current_filter").html( $(record_filter).first().children(".collection").val() )
-
-            //     // Finally, let isotope do its magic.
-            //     $container.isotope({ filter: record_filter });                 
-            // });
 
 
             $(".map_collection_selected").removeClass("map_collection_selected");
@@ -190,26 +166,28 @@ jQuery(function($) {
                 $("#map-canvas").toggle();
                 $("#nogeotext").toggle();
                 $("#mapped_collection_selector").toggle();
-                return 0;       
+                return       
             }
 
             var mapPlots = [];
+            // See this link to understand why north is mapped to the x coordinate (latitude) and east is mapped to y coordinate (longitude)
+            // https://developers.google.com/maps/documentation/javascript/reference#LatLng
             for (var i = 0; i<json.length; i++) {
-                mapPlots[i] = new google.maps.LatLng(json[i].east, json[i].north );
-                console.log('Plot at: ' + "LAT: " + json[i].east + " LONG: " + json[i].north);
-                console.log('Plot at: ' + mapPlots[i]);
+                mapPlots[i] = new google.maps.LatLng(json[i].north, json[i].east );
+                // console.log('Plot at: ' + "LAT: " + json[i].east + " LONG: " + json[i].north);
+                // console.log('Plot at: ' + mapPlots[i]);
             }
 
             if (typeof mapPlots[0] != 'undefined') {
                 // k=longitude (north)
                 // B=latitude (east)
-                var mapcenter = new google.maps.LatLng(mapPlots[0].B, mapPlots[0].k);
+                var mapcenter = mapPlots[0]
             } else {
                 var mapcenter = new google.maps.LatLng(0, 0);
             }
 
             var mapOptions = {
-                zoom: 1,
+                zoom: 2,
                 minZoom:1,
                 center: mapcenter,
                 mapTypeId: google.maps.MapTypeId.SATELLITE
@@ -220,36 +198,51 @@ jQuery(function($) {
 
             for (var i = 0; i<mapPlots.length; i++) {
                 // Add a marker for each plot to the map.
-                console.log('Marker at: ' + mapPlots[i]);
-                new google.maps.Marker({
-                      position: {lat: mapPlots[i].B, lng: mapPlots[i].k},
+                var marker =  new google.maps.Marker({
+                      position: mapPlots[i],
                       map: map,
                 });
                 
-                // // Set up event listener for markers: when clicked will filter mapped records list.
-                // google.maps.event.addListener(marker, 'click', function() {
-                //     map.setZoom(12);
-                //     map.setCenter(this.getPosition());
+                // Set up event listener for markers: when clicked will filter mapped records list.
+                google.maps.event.addListener(marker, 'click', function() {
+                    map.setZoom(12);
+                    map.setCenter(this.getPosition());
 
-                //     // normalize the position strings with the dom class specified in mapped records.
-                //     var latstr = String(this.getPosition().lat()).replace('.', '').slice(0,6);
-                //     var lngstr = String(this.getPosition().lng()).replace('.', '').slice(0,6);
+                    // normalize the position strings with the dom class specified in mapped records.
+                    var latstr = String(this.getPosition().lat()).replace('.', '').slice(0,6);
+                    var lngstr = String(this.getPosition().lng()).replace('.', '').slice(0,6);
                     
-                //     // build string used to select relevant classes from mapped records list
-                //     var record_filter = ".coord"+latstr +"_"+lngstr;
-                //     // console.log(record_filter);
-                //     // display the collection title currently being filtered / handle the button to reset filter
-                //     $("#filter_reset_btn").css( "display", "inline");
-                //     $("#current_filter").html( $(record_filter).first().children(".collection").val() )
+                    // build string used to select relevant classes from mapped collections list
+                    var map_filter = ".coord"+lngstr +"_"+latstr;
 
-                //     // Finally, let isotope do its magic.
-                //     $container.isotope({ filter: record_filter });                 
-                // });
+                    // grab the relevant info from hidden inputs to display in infowindow
+                    var collection_name = $(map_filter).first().children(".collection").val();
+                    var collection_url = $(map_filter).first().children(".site_url").val();
+                    var languages = $(map_filter).first().children(".language").val();
+                    var display_text = '<p><b>Collection: </b><a href=\"' + collection_url + '\">' + collection_name + '</a>' + '<br><b>Language: </b> ' + languages + '<br><b>Coordinates: </b>east: ' + this.getPosition().lat() + ', north: ' + this.getPosition().lng() + '</p>';
+
+                    
+                    var infowindowOptions = {
+                        content: display_text,
+                        position: this.getPosition(),
+                        maxWidth: 200
+                    };                    
+                    infowindow.setOptions(infowindowOptions);
+                    infowindow.open(map);
+
+                    // Display the reset button -- 'show all'
+                    $("#filter_reset_btn").css( "display", "inline");
+                    
+                    // Finally, let isotope do its magic.
+                    $container.isotope({ filter: map_filter });
+
+                });
+                        
+                        
             }
+                 
+            infowindow = new google.maps.InfoWindow();
 
-            // Init 'global' infowindow object set to blank.
-            infowindow = new google.maps.InfoWindow({ content: "" }); 
-            
             // set up infowindow to modify dom relevant dom elements when close button is clicked.
             google.maps.event.addListener(infowindow, 'closeclick', function() {
                 $(".map_collection_selected").removeClass("map_collection_selected");
@@ -260,7 +253,7 @@ jQuery(function($) {
 
         // Init Google map (or not)
         initialize();
-        // paginator();
+        paginator();
     });
 
 });

@@ -4,15 +4,11 @@
 {% block page_header %}<small>{{ object }}</small>{% endblock page_header %}
 
 {% block content %}
+	<dl class="dl-horizontal">
 	{% for k,v in item_data.items %}
-		<h5>
-			<i>{{ k }}</i>: 
-				
-			<span><b>
-				{% if k == 'identifier' %} {{ v|urlize }} {% else %} {{ v }} {% endif %}
-				
-			</b></span> 
-			
-		</h5>
-	{% endfor %}		
+		
+			<dt>{{ k }}</dt> 			
+			<dd>{% for j in v  %}{% if k == 'identifier' %} {{ j|urlize }} {% else %} {{ j }} {% endif %}{% endfor %}</dd>
+	{% endfor %}
+	</dl>		
 {% endblock content %}

@@ -80,63 +80,9 @@
   <ListRecords metadataPrefix="olac">
     <oai:record>
       <oai:header>
-        <oai:identifier>oai:kayardild.lt.cs.mu.oz.au:01</oai:identifier>
-        <oai:datestamp>2004-07-06</oai:datestamp>
-        <oai:setSpec>col_10125_4272</oai:setSpec>
-      </oai:header>
-      <oai:metadata>
-        <olac:olac>
-          <dc:title>A grammar of Kayardild. With comparative notes on Tangkic.</dc:title>
-          <dc:creator>Evans, Nicholas D.</dc:creator>
-          <dc:subject>Kayardild grammar</dc:subject>
-           <dc:subject xsi:type="olac:language" olac:code="gyd"/>
-           <dc:subject xsi:type="olac:language" olac:code="wtf"/>
-           <dc:subject xsi:type="olac:linguistic-field" olac:code="syntax"/>
-           <dc:subject xsi:type="olac:discourse-type" olac:code="narrative"/>
-          <dc:language xsi:type="olac:language" olac:code="eng"/>
-          <dc:description>Kayardild Grammar (ISBN 3110127954)</dc:description>
-          <dc:publisher>Berlin - Mouton de Gruyter</dc:publisher>
-          <dc:contributor xsi:type="olac:role" olac:code="author">Nicholas Evans</dc:contributor>
-          <dcterms:spatial xsi:type="dcterms:Point">north=3.19057; east=113.0901109</dcterms:spatial>
-          <dc:format>hardcover, 837 pages</dc:format>
-          <dc:relation>related to ISBN 0646119966</dc:relation>
-          <dc:coverage>Australia</dc:coverage>
-           <dc:type xsi:type="olac:linguistic-type" olac:code="language_description"/>
-           <dc:type xsi:type="dcterms:DCMIType">Text</dc:type>
-        </olac:olac>
-      </oai:metadata>
-    </oai:record>
-          
-    <oai:record>
-      <oai:header>
-        <oai:identifier>oai:kayardild.lt.cs.mu.oz.au:9898989</oai:identifier>
-        <oai:datestamp>2004-07-08</oai:datestamp>
-        <oai:setSpec>col_10125_24084</oai:setSpec>
-      </oai:header>
-      <oai:metadata>
-        <olac:olac>
-          <dc:title>Kayardild dictionary and thesaurus : a vocabulary of the language of the Bentinck Islanders, North-West Queensland </dc:title>
-          <dc:creator>Nicholas Evans</dc:creator>
-          <dc:subject>Kayardild dictionary and thesaurus</dc:subject>
-          <dc:subject xsi:type="olac:language" olac:code="gyd"/>
-          <dc:description>Kayardild dictionary and thesaurus (ISBN 0646119966) </dc:description>
-          <dc:publisher>Parkville, Vic., Australia. University of Melbourne, Dept. of Linguistics and Language Studies.</dc:publisher>
-          <dc:contributor xsi:type="olac:role" olac:code="researcher">Nicholas Evans</dc:contributor>
-          <dc:contributor xsi:type="olac:role" olac:code="researcher">Penny Johnson</dc:contributor>
-          <dc:contributor xsi:type="olac:role" olac:code="researcher">Marbuk Kohler</dc:contributor>
-          <dc:contributor xsi:type="olac:role" olac:code="researcher">Ken Hale</dc:contributor>
-          <dcterms:spatial xsi:type="dcterms:Point">north=7.4278; east=134.5495</dcterms:spatial>
-          <dc:format>format: xiv, 334 p. : ill. ; 24 cm</dc:format>
-          <dc:relation>related to ISBN 3110127954</dc:relation>
-          <dc:coverage>Australia</dc:coverage>
-        </olac:olac>
-      </oai:metadata>
-    </oai:record>
-    <oai:record>
-      <oai:header>
         <oai:identifier>oai:scholarspace.manoa.hawaii.edu:10125/32515</oai:identifier>
         <oai:datestamp>2014-02-21</oai:datestamp>
-        <oai:setSpec>col_10125_32448</oai:setSpec>
+       <oai:setSpec>col_10125_32448</oai:setSpec>
       </oai:header>
       <oai:metadata>
         <olac:olac>
@@ -146,11 +92,11 @@
           <dc:contributor xsi:type="olac:role" olac:code="recorder">Berg, Esther</dc:contributor>
           <dc:contributor xsi:type="olac:role" olac:code="researcher">Berg, Esther</dc:contributor>
           <dc:contributor xsi:type="olac:role" olac:code="depositor">Berg, Esther</dc:contributor>
-          <dcterms:spatial xsi:type="dcterms:Point">east=100.315246; north=30.939924</dcterms:spatial>
+          <dcterms:spatial xsi:type="dcterms:Point">east=7.4278; north=134.5495</dcterms:spatial>
           <dc:coverage xsi:type="dcterms:ISO3166">PW</dc:coverage>
           <dc:coverage xsi:type="dcterms:ISO3166">PW</dc:coverage>
           <dc:date xsi:type="dcterms:W3CDTF">2013-10-14</dc:date>
-          <dc:description>Words with geminate consonants</dc:description>
+          <dc:description>Honolulu Weather Tape. James Kahukua…000-260, George Kitazaki…260-435, Jim Engle…435-593 (Second Selection, Most Recent Job), Doug Faris…600-661 (First Selection), WEATHER</dc:description>
           <dc:description>Region: Echang, Koror, Palau</dc:description>
           <dc:format>digital wav file recorded at 44.1 kHz/16 bit on Zoom H2N</dc:format>
           <dc:format>00:05:34</dc:format>
@@ -158,14 +104,69 @@
           <dc:language xsi:type="olac:language" olac:code="sov"/>
           <dc:language xsi:type="olac:language" olac:code="eng"/>
           <dc:subject xsi:type="olac:language" olac:code="sov" />
-          <dc:subject xsi:type="olac:language" olac:code="wtf" />
           <dc:title>EB1-066</dc:title>
           <dc:type xsi:type="olac:linguistic-type" olac:code="language_description"/>
           <dc:type xsi:type="olac:linguistic-type" olac:code="lexicon"/>
           <dc:type xsi:type="dcterms:DCMIType">sound</dc:type>
        </olac:olac>
      </oai:metadata>
+   </oai:record>  
+    <oai:record>
+      <oai:header>
+        <oai:identifier>oai:scholarspace.manoa.hawaii.edu:10125/27667</oai:identifier>
+        <oai:datestamp>2014-02-20</oai:datestamp>
+       <oai:setSpec>col_10125_27415</oai:setSpec>
+      </oai:header>
+      <oai:metadata>
+        <olac:olac>
+          <dcterms:tableOfContents>JV1-181.mov</dcterms:tableOfContents>
+          <dcterms:bibliographicCitation>Van Way, John, Van Way, John, Bzangpo, Bkrashis; 2012-05-26; video elicitation 3 of 'tongue'.; digital video file (recorded on iPhone); Kaipuleohone University of Hawai'i Digital Language Archive;http://hdl.handle.net/10125/27667.</dcterms:bibliographicCitation>          <dc:contributor xsi:type="olac:role" olac:code="researcher">Van Way, John</dc:contributor>
+          <dc:contributor xsi:type="olac:role" olac:code="depositor">Van Way, John</dc:contributor>
+          <dc:contributor xsi:type="olac:role" olac:code="consultant">Bzangpo, Bkrashis</dc:contributor>
+          <dcterms:spatial xsi:type="dcterms:Point">north=100.315246; east=30.939924</dcterms:spatial>
+          <dc:coverage xsi:type="dcterms:ISO3166">CN</dc:coverage>
+          <dc:date xsi:type="dcterms:W3CDTF">2012-05-26</dc:date>
+          <dc:description>video elicitation 3 of 'tongue'.</dc:description>
+          <dc:description>Region: Bangsmad, China</dc:description>
+          <dc:format>digital video file (recorded on iPhone)</dc:format>
+          <dc:format>0:00:06</dc:format>
+          <dc:identifier xsi:type="dcterms:URI">http://hdl.handle.net/10125/27667</dc:identifier>
+          <dc:language xsi:type="olac:language" olac:code="ero"/>
+          <dc:language xsi:type="olac:language" olac:code="eng"/>
+          <dc:subject xsi:type="olac:language" olac:code="ero" />
+          <dc:title>JV1-181</dc:title>
+          <dc:type xsi:type="olac:linguistic-type" olac:code="lexicon"/>
+          <dc:type xsi:type="dcterms:DCMIType">image</dc:type>
+       </olac:olac>
+     </oai:metadata>
    </oai:record>
-            
+    <oai:record>
+      <oai:header>
+        <oai:identifier>oai:scholarspace.manoa.hawaii.edu:10125/4679</oai:identifier>
+        <oai:datestamp>2014-04-10</oai:datestamp>
+       <oai:setSpec>col_10125_7735</oai:setSpec>
+      </oai:header>
+      <oai:metadata>
+        <olac:olac>
+          <dcterms:tableOfContents>RB1-001-B.mp3</dcterms:tableOfContents>
+          <dcterms:tableOfContents>RB1-001-B.wav</dcterms:tableOfContents>
+          <dcterms:bibliographicCitation>Blust, Robert; n.d.; Bintulu, Sa'ban, Long Labid. 50 wds Bintulu - UbA  (Umar bin Hamza from ??)  Sa'ban - JU (Jali Udaw from Long ??)  Long Labid (Unin Bon from Long Labid) (just a few words)/ Notes: Side 1 was just music (came on tape?); Side 2 has wind noise, starts/stops, final language (Long Labid) is cut off.; Kaipuleohone University of Hawai'i Digital Language Archive;http://hdl.handle.net/10125/4679.</dcterms:bibliographicCitation>          <dc:contributor xsi:type="olac:role" olac:code="depositor">Blust, Robert</dc:contributor>
+          <dcterms:spatial xsi:type="dcterms:Point">east=3.19057; north=113.0901109</dcterms:spatial>
+          <dc:coverage xsi:type="dcterms:ISO3166">ID</dc:coverage>
+          <dc:date xsi:type="dcterms:W3CDTF">n.d.</dc:date>
+          <dc:description>Bintulu, Sa'ban, Long Labid. 50 wds Bintulu - UbA  (Umar bin Hamza from ??)  Sa'ban - JU (Jali Udaw from Long ??)  Long Labid (Unin Bon from Long Labid) (just a few words)/ Notes: Side 1 was just music (came on tape?); Side 2 has wind noise, starts/stops, final language (Long Labid) is cut off.</dc:description>
+          <dc:identifier xsi:type="dcterms:URI">http://hdl.handle.net/10125/4679</dc:identifier>
+          <dc:language xsi:type="olac:language" olac:code="bny"/>
+          <dc:language xsi:type="olac:language" olac:code="snv"/>
+          <dc:language xsi:type="olac:language" olac:code="ttw"/>
+          <dc:subject xsi:type="olac:language" olac:code="bny" />
+          <dc:subject xsi:type="olac:language" olac:code="snv" />
+          <dc:subject xsi:type="olac:language" olac:code="ttw" />
+          <dc:title>RB1-001</dc:title>
+          <dc:type xsi:type="olac:linguistic-type" olac:code="lexicon"/>
+          <dc:type xsi:type="dcterms:DCMIType">sound</dc:type>
+       </olac:olac>
+     </oai:metadata>
+   </oai:record>      
   </ListRecords>
 </Repository>

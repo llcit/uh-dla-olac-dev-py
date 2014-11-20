@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView, TemplateView, ListView, DetailView, CreateView, UpdateView
 from django.template import RequestContext
@@ -7,12 +7,12 @@ from django.db.models import Q, Count
 from collections import Counter, namedtuple
 import datetime, json, operator
 
-from olacharvests.models import Repository, Collection, Record, MetadataElement
-from .mixins import RecordSearchMixin, MapDataMixin
+from olacharvests.models import Repository, Collection, Record, MetadataElement, ArchiveMetadataElement
+from .mixins import RecordSearchMixin, MapDataMixin, RepositoryInfoMixin
 from .models import RepositoryCache
 from .forms import CreateRepositoryForm, HarvestRepositoryForm, CollectionsUpdateForm
 
-class HomeView(MapDataMixin, TemplateView):
+class HomeView(MapDataMixin, RepositoryInfoMixin, TemplateView):
     template_name = 'home.html'
     
     def get_context_data(self, **kwargs):     
@@ -20,14 +20,19 @@ class HomeView(MapDataMixin, TemplateView):
         # self.queryset = Record.objects.filter(data__element_type='spatial')     
         context = super(HomeView, self).get_context_data(**kwargs)      
         repo_cache = RepositoryCache.objects.all()[0]
-        context['languages'] = repo_cache.language_list
-        context['contributors'] = repo_cache.contributor_list
+        
+        languages = json.loads(repo_cache.language_list)
+        context['languages'] = sorted(languages.items(), key=operator.itemgetter(1), reverse=True)
+
+        contributors = json.loads(repo_cache.contributor_list)
+        context['contributors'] = sorted(contributors.items(), key=operator.itemgetter(1), reverse=True)
         
         # Create collections list
-        context['collections'] = Collection.objects.all().order_by('name')
+        collections = [(i, i.count_records()) for i in Collection.objects.all()]
+        context['collections'] = sorted(collections, key=operator.itemgetter(1), reverse=True)
         return context
 
-class RepositoryView(DetailView):
+class RepositoryView(RepositoryInfoMixin, DetailView):
     model = Repository
     template_name = 'olac_repository.html'
 
@@ -46,7 +51,23 @@ class RepositoryCreateView(CreateView):
         context['existing_repositories'] = Repository.objects.all()
         return context
 
-class RepositoryHarvestUpdateView(UpdateView):
+class RepositoryResetView(TemplateView):
+    template_name = 'olac_repository_manage.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        
+        
+        MetadataElement.objects.all().delete()
+        ArchiveMetadataElement.objects.all().delete()
+        Record.objects.all().delete()
+        Collection.objects.all().delete()
+        RepositoryCache.objects.all().delete()
+        Repository.objects.all().delete()
+
+        return redirect('add_repository')
+
+
+class RepositoryHarvestUpdateView(RepositoryInfoMixin, UpdateView):
     model = Repository
     template_name = 'olac_harvest.html'
     form_class = HarvestRepositoryForm
@@ -60,23 +81,39 @@ class RepositoryHarvestUpdateView(UpdateView):
         initial['last_harvest'] = datetime.date.today()
         return initial
 
-class CollectionListView(ListView):
+class CollectionListView(RepositoryInfoMixin, ListView):
     model = Collection
     template_name = 'collection_list.html'
 
-class CollectionView(MapDataMixin, DetailView):
+class CollectionView(RepositoryInfoMixin, DetailView):
     model = Collection
     template_name = 'collection_view.html'
-    queryset = None
 
     def get_context_data(self, **kwargs):
-        self.queryset = self.get_object().list_records()
         context = super(CollectionView, self).get_context_data(**kwargs)
-        context['items'] = self.queryset
-        context['size'] = len(self.queryset)
+
+        d = self.get_object().as_dict()
+        for k, v in d.items():
+            try: 
+                d[k] = ', '.join(v)
+            except:
+                d[k] = v[0]
+                pass
+        
+        context['collection_info'] = d
+
+        records = [{
+            'title':        i.get_metadata_item('title')[0].element_data, 
+            'description':  [j.element_data for j in i.get_metadata_item('description')],
+            'url':          i.get_absolute_url()
+            } for i in self.get_object().list_records().order_by('identifier')
+            ]
+
+        context['records'] = records
+        context['size'] = len(context['records'])
         return context
 
-class CollectionsUpdateView(UpdateView):
+class CollectionsUpdateView(RepositoryInfoMixin, UpdateView):
     model = Repository
     template_name = 'collection_update.html'
     form_class = CollectionsUpdateForm
@@ -93,7 +130,7 @@ class CollectionsUpdateView(UpdateView):
         context['collection_list'] = Collection.objects.all()
         return context
 
-class ItemView(DetailView):
+class ItemView(RepositoryInfoMixin, DetailView):
     model = Record
     template_name = 'item_view.html'
 
@@ -103,7 +140,7 @@ class ItemView(DetailView):
         return context
 
 
-class LanguageView(MapDataMixin, ListView):
+class LanguageView(MapDataMixin, RepositoryInfoMixin, ListView):
     model = Record
     template_name = 'collection_view.html'
 
@@ -119,7 +156,7 @@ class LanguageView(MapDataMixin, ListView):
         return context
 
 
-class ContributorView(MapDataMixin, ListView):
+class ContributorView(MapDataMixin, RepositoryInfoMixin, ListView):
     model = Record
     template_name = 'collection_view.html'
 
@@ -146,7 +183,7 @@ class ContributorView(MapDataMixin, ListView):
         return context
 
 
-class SearchView(ListView):
+class SearchView(RepositoryInfoMixin, ListView):
     template_name = 'search.html'
 
     def post(self, request, *args, **kwargs):

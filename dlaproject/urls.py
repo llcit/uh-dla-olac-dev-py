@@ -13,6 +13,7 @@ from dlasite.views import (
 	SearchPage,
 	RepositoryView,
 	RepositoryCreateView,
+	RepositoryResetView,
 	RepositoryHarvestUpdateView
 )
 
@@ -25,6 +26,9 @@ urlpatterns = patterns('',
 	
 	url(r'^repository/add/$',
 	   RepositoryCreateView.as_view(), name='add_repository'),
+
+	url(r'^repository/delete/$',
+	   RepositoryResetView.as_view(), name='delete_repository'),
 	
 	url(r'^repository/harvest/(?P<slug>[-\w]+)/$',
 	   RepositoryHarvestUpdateView.as_view(), name='harvest_repository'),
@@ -38,7 +42,7 @@ urlpatterns = patterns('',
 
 
 
-	url(r'^collection/(?P<slug>[-\w]+)$',
+	url(r'^collection/(?P<slug>[-\w]+)/$',
 	   CollectionView.as_view(), name='collection'),
 	url(r'^item/(?P<pk>\w+)$',
 	   ItemView.as_view(), name='item'),

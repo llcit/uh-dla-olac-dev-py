@@ -8,9 +8,22 @@ import urllib2
 OlacRecord = namedtuple('OlacRecord', ['header', 'metadata'])
 OlacMetadataItem = namedtuple('OlacMetadataItem', 'fieldname data')
 
+
+namespaces = {
+    'oai': 'http://www.openarchives.org/OAI/2.0/', # Note: this appears to apply to those elements that do not have prefixes.
+    'olac': 'http://www.language-archives.org/OLAC/1.1/',
+    'dcterms': 'http://purl.org/dc/terms/',
+    'static': 'http://www.openarchives.org/OAI/2.0/static-repository',
+    'dc': 'http://purl.org/dc/elements/1.1/',
+    'olac-archive': 'http://www.language-archives.org/OLAC/1.1/olac-archive',
+    'oai-identifier': 'http://www.openarchives.org/OAI/2.0/oai-identifier',
+    'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+}
+
+# Prebuilt xpath strings for use in evaluator
 olac_archive_reader = {
-    'name': '//repository:repositoryName',
-    'base_url': '//repository:baseURL',
+    'name': '//oai:repositoryName',
+    'base_url': '//oai:baseURL',
     'archive_url': '//olac-archive:archiveURL',
     'participant': '//olac-archive:participant',
     'institution': '//olac-archive:institution',
@@ -51,16 +64,7 @@ meta_type_map = {
     'dcterms:ISO3166': 'iso'
 }
 
-namespaces = {
-    'oai': 'http://www.openarchives.org/OAI/2.0/',
-    'olac': 'http://www.language-archives.org/OLAC/1.1/',
-    'dcterms': 'http://purl.org/dc/terms/',
-    'dc': 'http://purl.org/dc/elements/1.1/',
-    'repository': 'http://www.openarchives.org/OAI/2.0/static-repository',
-    'olac-archive': 'http://www.language-archives.org/OLAC/1.1/olac-archive',
-    'oai-identifier': 'http://www.openarchives.org/OAI/2.0/oai-identifier',
-    'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-}
+
 
 
 class OLACClient(object):
@@ -69,32 +73,26 @@ class OLACClient(object):
     A loose implementation of client OAI protocol.
     Designed to parse and load an OLAC 'static repository' xml document.
     E.g., http://www.language-archives.org/OLAC/1.1/static-repository.xml
+    Scholarspace is http://scholarspace.manoa.hawaii.edu/Kaipuleohone.xml
     """
 
     def __init__(self, xmlfilepath):
         """
         xmlfilepath: a local file or url of an OLAC static repository.
+        Creates an lxml root element (self.root) for xmlfilepath string.
         """
-        self.root = self.build_tree_root(xmlfilepath)
 
-
-    def build_tree_root(self, xmlfilepath):
         try:
-            request = urllib2.Request(xmlfilepath)
-            response = urllib2.urlopen(request)
-            text = response.read()
+            tree = etree.parse(xmlfilepath)
+            self.root = tree.getroot()
+            
+        except Exception as inst:
+            print type(inst)     # the exception instance
+            print inst.args      # arguments stored in .args
+            print inst
+            raise inst 
         except:
             return etree.XML('')
-        
-        try:
-            xml = text.encode('ascii', 'replace')
-            xml = unicode(xml, 'UTF-8', 'replace')
-            xml = xml.replace(chr(12), '?')
-            xml = xml.encode('UTF-8')
-        except:
-            return etree.XML('')
-
-        return etree.XML(xml)
 
     def identify(self):
         evaluator = etree.XPathEvaluator(self.root, namespaces=namespaces)
@@ -102,6 +100,7 @@ class OLACClient(object):
         repository_info = [] # list of metadatitem namedtuples
         for tag, xpath in olac_archive_reader.items():
             for node in evaluator(xpath):
+                print node
                 if tag == 'participant':
                     text = '%s (%s) %s'% (node.get('name'), node.get('role'), node.get('email'))
                 elif tag == 'datestamp':
@@ -110,7 +109,7 @@ class OLACClient(object):
                     text = node.text
 
                 repository_info.append(OlacMetadataItem(tag, text))
-        
+    
         return repository_info
 
     def list_metatdata_formats(self):

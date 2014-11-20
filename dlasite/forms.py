@@ -11,7 +11,7 @@ from oaipmh.metadata import MetadataRegistry, oai_dc_reader
 from olacharvests.olac import OLACClient
 from olacharvests.models import Repository, Collection, Record, MetadataElement
 
-from .utils import OLACUtil, OAIUtil
+from .utils import OLACUtil, OAIUtil, DlaSiteUtil
 from .models import RepositoryCache
 
 
@@ -25,6 +25,11 @@ class CreateRepositoryForm(ModelForm):
             repo_name = [x for x in repo_meta if x.fieldname == 'name']
             cleaned_data['repo_name'] = repo_name[0].data
             cleaned_data['repo_meta'] = repo_meta
+        except Exception as inst:
+            print type(inst)     # the exception instance
+            print inst.args      # arguments stored in .args
+            print inst
+            raise Exception(inst)
         except:
             raise ValidationError('Repository base url is invalid.')
 
@@ -56,7 +61,8 @@ class HarvestRepositoryForm(ModelForm):
         try:
             olac_client = OLACUtil(cleaned_data.get('base_url'))
             olac_client.harvest_records()
-            olac_client.update_repository_cache()
+            dlasite_util = DlaSiteUtil()
+            # dlasite_util.update_repository_cache()
 
         except ValidationError:
             raise ValidationError(str( ('Repository at %s is invalid.')% cleaned_data.get('base_url') ))
@@ -80,10 +86,18 @@ class CollectionsUpdateForm(ModelForm):
         try:
             oai_client = OAIUtil(cleaned_data.get('request_url'))
             oai_client.update_oai_collection_info()
-            OLACUtil.update_repository_cache()
+            
+            dlasite_util = DlaSiteUtil()
+            dlasite_util.update_repository_cache()
         
-        except:
-            raise ValidationError(str( ('OAI Repository at %s is invalid.')% cleaned_data.get('request_url') ))
+        except Exception as inst:
+            print type(inst)     # the exception instance
+            print inst.args      # arguments stored in .args
+            print inst
+            raise inst    
+            # raise ValidationError(str( ('OAI Repository at %s is invalid.')% cleaned_data.get('request_url') ))
+
+
 
         return cleaned_data
 
@@ -92,6 +106,4 @@ class CollectionsUpdateForm(ModelForm):
         fields = ['base_url']
         widgets = {
             'base_url': forms.HiddenInput()}
-
-
 

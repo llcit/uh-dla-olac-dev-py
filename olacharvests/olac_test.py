@@ -1,12 +1,13 @@
-olac_test.py
+# olac_test.py
+# from .olac import OLACClient
+# from .models import *
 from lxml import etree
-import codecs
-import urllib2
+# import urllib2
 
+# xmlfilepath = 'http://localhost:8000/static/test/sample.xml'
+#xmlfilepath = 'http://www.language-archives.org/OLAC/1.1/static-repository.xml'
+xmlfilepath = 'http://scholarspace.manoa.hawaii.edu/Kaipuleohone.xml' # sample-olac-static-repo.xml
 
-# 'http://www.language-archives.org/OLAC/1.1/static-repository.xml'
-xmlfilepath = 'http://www.language-archives.org/OLAC/1.1/static-repository.xml' # sample-olac-static-repo.xml
-# xmlfilepath = 'sample-olac-kaipuleohone.xml'
 mprefix = 'olac'
 namespaces = {
 	'oai': 'http://www.openarchives.org/OAI/2.0/', 
@@ -22,24 +23,25 @@ print 'xmlfilepath --> ', xmlfilepath
 print 'mprefix --> ', mprefix
 print 'namespaces --> ', namespaces
 
+# The lxml way. Seems to be more robust.
+tree = etree.parse(xmlfilepath)
+repository = tree.getroot()
 
-req = urllib2.Request(xmlfilepath)
-response = urllib2.urlopen(req)
-text = response.read()
+		# req = urllib2.Request(xmlfilepath)
+		# response = urllib2.urlopen(req)
+		# text = response.read()
+		# OLD and not robust
+		# xml = text.encode('ascii', 'replace')
+		# xml = unicode(xml, 'UTF-8', 'replace')   	 
+		# xml = xml.replace(chr(12), '?')
+		# xml = xml.encode('UTF-8')
 
-# with codecs.open(xmlfilepath, 'r', 'utf-8') as xmlfile:
-#     text = xmlfile.read()
 
-xml = text.encode('ascii', 'replace')
-xml = unicode(xml, 'UTF-8', 'replace')   	 
-xml = xml.replace(chr(12), '?')
-xml = xml.encode('UTF-8')
-
-repository = etree.XML(xml) # Repository root element = 'Repository'
-evaluator = etree.XPathEvaluator(repository, namespaces=namespaces)
-identify = evaluator('//repository:Identify')
-listmetadataformats = evaluator('//repository:ListMetadataFormats')
-listrecords = evaluator('//repository:ListRecords')
+		# repository = etree.XML(xml) # Repository root element = 'Repository'
+		# evaluator = etree.XPathEvaluator(repository, namespaces=namespaces)
+		# identify = evaluator('//repository:Identify')
+		# listmetadataformats = evaluator('//repository:ListMetadataFormats')
+		# listrecords = evaluator('//repository:ListRecords')
 
 
 

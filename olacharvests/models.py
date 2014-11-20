@@ -98,11 +98,13 @@ class Collection(TimeStampedModel):
         """ Returns a list of Plot tuples pruned from records in a collection. """
         plots = set()
         for record in self.list_records():
-            plots.add(record.get_map_plot() or None)
+            p = record.get_map_plot()
+            if p:
+                plots.add(p)
         return list(plots)
 
     def list_languages(self):
-        """ Returns a list of Plot tuples pruned from records in this collection. """
+        """ Returns a list of languages pruned from records in this collection. """
         languages = set()
 
         for record in self.list_records():
@@ -115,11 +117,11 @@ class Collection(TimeStampedModel):
     def as_dict(self):
         """ Returns a dictionary representation of the collection data as k,v = {type: data list}"""
         collection_dict = {}
-        collection_dict['identifier'] = self.identifier
-        collection_dict['name'] = self.name
-        collection_dict['repository'] = self.repository
-        collection_dict['site_url'] = self.get_absolute_url()
-        collection_dict['num_records'] = self.count_records()
+        collection_dict['identifier'] = [self.identifier]
+        collection_dict['name'] = [self.name]
+        collection_dict['repository'] = [self.repository]
+        collection_dict['site_url'] = [self.get_absolute_url()]
+        collection_dict['num_records'] = [self.count_records()]
         collection_dict['map_plots'] = self.list_map_plots()
         collection_dict['languages'] = self.list_languages()
         return collection_dict
@@ -130,7 +132,7 @@ class Collection(TimeStampedModel):
         return (self.name)
 
     def get_absolute_url(self):
-        return reverse('collection', args=[str(self.slug)])
+        return reverse('collection', args=[self.slug])
 
 
 class Record(TimeStampedModel):

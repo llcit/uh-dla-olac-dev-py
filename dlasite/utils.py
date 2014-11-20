@@ -25,8 +25,8 @@ class OLACUtil(object):
         """
         xmlfilepath: a local file or url of an OLAC static repository.
         """
-
-        self.client = OLACClient(xmlfilepath)
+        if xmlfilepath:
+            self.client = OLACClient(xmlfilepath)
 
     def get_repository(self):
         repository_info = self.client.identify()
@@ -46,30 +46,6 @@ class OLACUtil(object):
         return records_list
 
     def create_repository(self):
-        pass
-
-    def update_repository_cache(self):
-        site = DlaSiteUtil()
-        metadata = MetadataElement.objects.all()
-        
-        languages = metadata.filter(element_type='subject.language')
-        language_freq = Counter()
-        language_freq.update([x.element_data for x in languages])
-        
-        contributors = metadata.filter(element_type__startswith='contributor')
-        contributor_freq = Counter()
-        contributor_freq.update([x.element_data for x in contributors])
-
-        repo_cache = RepositoryCache.objects.all()[0] # There should be only one repository cache object in db.
-        repo_cache.language_list = json.dumps(language_freq)
-        repo_cache.contributor_list = json.dumps(contributor_freq)
-        repo_cache.mapped_data_list = site.make_map_plots(Record.objects.all())
-        repo_cache.mapped_collection_data_list = json.dumps(
-            site.make_map_plot_collections()
-            )
-        
-        repo_cache.save()
-
         pass
 
     def update_record_metadata(self, record, node):
@@ -176,31 +152,67 @@ class OAIUtil(object):
 
 class DlaSiteUtil(object):
     def __init__(self):
-        pass
+        return
+
+
+    def update_repository_cache(self):
+        metadata = MetadataElement.objects.all()
+        
+        languages = metadata.filter(element_type='subject.language')
+        language_freq = Counter()
+        language_freq.update([x.element_data for x in languages])
+        
+        contributors = metadata.filter(element_type__startswith='contributor')
+        contributor_freq = Counter()
+        contributor_freq.update([x.element_data for x in contributors])
+
+        try:
+            repo_cache = RepositoryCache.objects.all()[0] # There should be only one repository cache object in db.
+
+        except (IndexError, RepositoryCache.DoesNotExist):
+            repo_cache = RepositoryCache()
+
+        repo_cache.repository = Repository.objects.all()[0]
+        repo_cache.language_list = json.dumps(language_freq)
+        repo_cache.contributor_list = json.dumps(contributor_freq)
+        plots = self.make_map_plots(Record.objects.all())
+        repo_cache.mapped_data_list = self.make_json_map_plots(plots)
+        repo_cache.mapped_collection_data_list = json.dumps(
+            self.make_map_plot_collections()
+            )
+
+        repo_cache.save()
+        return
 
     def make_map_plots(self, queryset):
         mapped_plots = set()
-        for record in queryset: 
-            mapped_plots.add(record.get_map_plot())
-
-        return self.make_json_map_plots(list(mapped_plots))
+        for record in queryset:
+            p = record.get_map_plot()
+            if p:
+                mapped_plots.add(p)
+        return list(mapped_plots)
 
     def make_map_plot_collections(self):
         """
         Returns a tuple ([name, site url, [languages] ], [Plots])
         """
-        mapped_collections = [i for i in Collection.objects.all() if i.list_map_plots()]
+        try:
+            mapped_collections = [i for i in Collection.objects.all() if i.list_map_plots()]
 
-        # Very elaborate list comprehension...
-        mapped_collections = [
-            {
-                'name':        unicode(i), 
-                'site_url':     i.get_absolute_url(), 
-                'languages':    i.list_languages(),
-                'map_plots':    [j._asdict() for j in i.list_map_plots()]
-            }         
-            for i in mapped_collections
-        ]
+            # Very elaborate list comprehension...
+            mapped_collections = [
+                {
+                    'name':         i.name, 
+                    'site_url':     i.get_absolute_url(), 
+                    'languages':    i.list_languages(),
+                    'map_plots':    [j._asdict() for j in i.list_map_plots()]
+                }         
+                for i in mapped_collections
+            ]
+
+        except:
+            raise Exception()
+
         return mapped_collections
 
 

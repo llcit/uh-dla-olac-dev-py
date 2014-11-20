@@ -1,5 +1,5 @@
 # mixins.py
-from olacharvests.models import MetadataElement
+from olacharvests.models import Repository, MetadataElement
 from .utils import DlaSiteUtil
 from .models import RepositoryCache
 import json
@@ -14,6 +14,21 @@ See changes below for examples of list comprehensions.
 """
 
 
+
+class RepositoryInfoMixin(object):
+    """
+    Simply populates a template variable with the one and only Repository object. 
+    """
+
+    def get_context_data(self, **kwargs):
+        context = super(RepositoryInfoMixin, self).get_context_data(**kwargs)
+        context['repository'] = Repository.objects.all()[0]
+        return context
+
+class MapCollectionDataMixin(object):
+    def get_context_data(self, **kwargs):
+        context = super(MapCollectionDataMixin, self).get_context_data(**kwargs)
+        return context
 
 class MapDataMixin(object):
     """

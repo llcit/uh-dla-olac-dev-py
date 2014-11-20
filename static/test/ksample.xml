@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Repository xmlns="http://www.openarchives.org/OAI/2.0/static-repository" 
+            xmlns:static="http://www.openarchives.org/OAI/2.0/static-repository" 
+            xmlns:oai="http://www.openarchives.org/OAI/2.0/" 
+            xmlns:olac="http://www.language-archives.org/OLAC/1.1/"
+            xmlns:dc="http://purl.org/dc/elements/1.1/"
+            xmlns:dcterms="http://purl.org/dc/terms/"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+            xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/static-repository 
+            http://www.language-archives.org/OLAC/1.1/static-repository.xsd
+                http://www.language-archives.org/OLAC/1.1/
+                http://www.language-archives.org/OLAC/1.1/olac.xsd
+                http://purl.org/dc/elements/1.1/
+                http://dublincore.org/schemas/xmls/qdc/2006/01/06/dc.xsd
+                http://purl.org/dc/terms/
+                http://dublincore.org/schemas/xmls/qdc/2006/01/06/dcterms.xsd">
+
+  <static:Identify xmlns="http://www.openarchives.org/OAI/2.0/">
+    <repositoryName>Kaipuleohone</repositoryName>
+    <baseURL>http://scholarspace.manoa.hawaii.edu/Kaipuleohone.xml</baseURL>
+    <protocolVersion>2.0</protocolVersion>
+    <adminEmail>betht@hawaii.edu</adminEmail>
+    <earliestDatestamp>2006-01-01</earliestDatestamp>
+    <deletedRecord>no</deletedRecord>
+    <granularity>YYYY-MM-DD</granularity>
+    <description> 
+      <oai-identifier
+        xmlns="http://www.openarchives.org/OAI/2.0/oai-identifier"
+        xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai-identifier
+          http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">
+        <scheme>oai</scheme>
+        <repositoryIdentifier>scholarspace.manoa.hawaii.edu</repositoryIdentifier>
+        <delimiter>:</delimiter>
+        <sampleIdentifier>oai:scholarspace.manoa.hawaii.edu:10125/4670</sampleIdentifier>
+      </oai-identifier>
+    </description>
+    <description>
+      <olac-archive
+        type="institutional"
+        currentAsOf="2014-11-18"
+        xmlns="http://www.language-archives.org/OLAC/1.1/olac-archive"
+        xsi:schemaLocation="http://www.language-archives.org/OLAC/1.1/olac-archive
+           http://www.language-archives.org/OLAC/1.1/olac-archive.xsd">
+        <archiveURL>http://scholarspace.manoa.hawaii.edu/handle/10125/4250/</archiveURL>
+	      <participant name="Beth Tillinghast" role="ScholarSpace Project Manager" email="betht@hawaii.edu"/>
+	      <participant name="Andrea Berez" role="Archive Manager" email="andrea.berez@gmail.com"/>
+	      <participant name="Daniel Ishimitsu" role="Database Administrator" email="daniel20@hawaii.edu"/>
+	      <institution>University of Hawaii at Manoa</institution>
+        <institutionURL>http://www.hawaii.edu/</institutionURL>
+         <shortLocation>Honolulu, USA</shortLocation>
+        <location>Hamilton Library, University of Hawaii at Manoa, Honolulu, Hawaii 96822, U.S.A.</location>
+        <synopsis>Kaipuleohone is a digital ethnographic archive for audio and video recordings as well as photographs, notes, dictionaries, transcriptions, and other materials related to small and endangered languages. The archive was established by the Department of Linguistics at the University of Hawai'i to ensure that priceless and unique research recordings will be digitized, described and safely housed in the longterm. Kaipuleohone conforms to international archiving standards for digital archives. Audio files are stored at high resolution and the metadata conforms to the Open Language Archives Community and Dublin Core. All digital files are curated by the Library system at the University of Hawai'i's DSpace repository, ScholarSpace. Every item in the collection has access conditions specified by the depositor on the deposit form. Kaipuleohone means a 'gourd of sweet words' and we are very grateful to Laiana Wong for suggesting this name and for allowing us to use it as the name of this archive.</synopsis>
+        <access>Most material is free to access by the public.  Certain documents are
+	        restricted to persons associated with the University of Hawaii and are 
+	        password protected.</access>
+	      <archivalSubmissionPolicy>ScholarSpace at the University of Hawaii at Manoa 
+	         accepts submissions of scholarly material from all members of the UH 
+	         community. Submitters must first get permission from the administrators by
+	         contacting us at micro@hawaii.edu
+	      </archivalSubmissionPolicy>
+      </olac-archive>
+    </description>
+  </static:Identify>
+    
+  <static:ListMetadataFormats xmlns="http://www.openarchives.org/OAI/2.0/">
+    
+    <metadataFormat>
+    	<metadataPrefix>olac</metadataPrefix>
+    	<schema>http://www.language-archives.org/OLAC/1.1/olac.xsd</schema>
+    	<metadataNamespace>http://www.language-archives.org/OLAC/1.1/ </metadataNamespace>
+    </metadataFormat>
+    
+  </static:ListMetadataFormats>
+    
+  <static:ListRecords metadataPrefix="olac" xmlns="http://www.openarchives.org/OAI/2.0/">
+    <oai:record>
+      <oai:header>
+        <oai:identifier>oai:scholarspace.manoa.hawaii.edu:10125/32707</oai:identifier>
+        <oai:datestamp>2014-03-11</oai:datestamp>
+	     <oai:setSpec>col_10125_4272</oai:setSpec>
+      </oai:header>
+      <oai:metadata>
+        <olac:olac>
+          <dcterms:tableOfContents>DB1-158-A.wav</dcterms:tableOfContents>
+          <dcterms:tableOfContents>DB1-158-B.wav</dcterms:tableOfContents>
+          <dcterms:bibliographicCitation>Bickerton, Derek, Bickerton, Derek; n.d.; O6 #6 G.M. (WP) F-P-48; Grace Molina (reading sample at beginning of side A).; Scotch AVC 90 cassette.; Kaipuleohone University of Hawai'i Digital Language Archive;http://hdl.handle.net/10125/32707.</dcterms:bibliographicCitation>          <dc:contributor xsi:type="olac:role" olac:code="researcher">Bickerton, Derek</dc:contributor>
+          <dc:contributor xsi:type="olac:role" olac:code="depositor">Bickerton, Derek</dc:contributor>
+          <dc:coverage xsi:type="dcterms:ISO3166">US</dc:coverage>
+          <dc:date xsi:type="dcterms:W3CDTF">n.d.</dc:date>
+          <dc:description>O6 #6 G.M. (WP) F-P-48; Grace Molina (reading sample at beginning of side A).</dc:description>
+          <dc:description>Region: USA (Hawai'i)</dc:description>
+          <dc:format>Scotch AVC 90 cassette.</dc:format>
+          <dc:identifier xsi:type="dcterms:URI">http://hdl.handle.net/10125/32707</dc:identifier>
+          <dc:language xsi:type="olac:language" olac:code="hwc"/>
+          <dc:subject xsi:type="olac:language" olac:code="hwc" />
+          <dc:title>DB1-158</dc:title>
+          <dc:type xsi:type="olac:linguistic-type" olac:code="primary_text"/>
+          <dc:type xsi:type="dcterms:DCMIType">sound</dc:type>
+       </olac:olac>
+     </oai:metadata>
+   </oai:record>
+    <oai:record>
+      <oai:header>
+        <oai:identifier>oai:scholarspace.manoa.hawaii.edu:10125/32706</oai:identifier>
+        <oai:datestamp>2014-03-11</oai:datestamp>
+	     <oai:setSpec>col_10125_4272</oai:setSpec>
+      </oai:header>
+      <oai:metadata>
+        <olac:olac>
+          <dcterms:tableOfContents>DB1-157-A.wav</dcterms:tableOfContents>
+          <dcterms:bibliographicCitation>Bickerton, Derek, Bickerton, Derek; n.d.; O4 A.T. (DB) F-H/C-42. Side 1: Mrs. Taniguchi (1); Side 2: Mrs. Taniguchi (2).; Scotch AVC 90 cassette.; Kaipuleohone University of Hawai'i Digital Language Archive;http://hdl.handle.net/10125/32706.</dcterms:bibliographicCitation>          <dc:contributor xsi:type="olac:role" olac:code="researcher">Bickerton, Derek</dc:contributor>
+          <dc:contributor xsi:type="olac:role" olac:code="depositor">Bickerton, Derek</dc:contributor>
+          <dc:coverage xsi:type="dcterms:ISO3166">US</dc:coverage>
+          <dc:date xsi:type="dcterms:W3CDTF">n.d.</dc:date>
+          <dc:description>O4 A.T. (DB) F-H/C-42. Side 1: Mrs. Taniguchi (1); Side 2: Mrs. Taniguchi (2).</dc:description>
+          <dc:description>Region: USA (Hawai'i)</dc:description>
+          <dc:format>Scotch AVC 90 cassette.</dc:format>
+          <dc:identifier xsi:type="dcterms:URI">http://hdl.handle.net/10125/32706</dc:identifier>
+          <dc:language xsi:type="olac:language" olac:code="hwc"/>
+          <dc:subject xsi:type="olac:language" olac:code="hwc" />
+          <dc:title>DB1-157</dc:title>
+          <dc:type xsi:type="olac:linguistic-type" olac:code="primary_text"/>
+          <dc:type xsi:type="dcterms:DCMIType">sound</dc:type>
+       </olac:olac>
+     </oai:metadata>
+   </oai:record>
+    <oai:record>
+      <oai:header>
+        <oai:identifier>oai:scholarspace.manoa.hawaii.edu:10125/32705</oai:identifier>
+        <oai:datestamp>2014-03-11</oai:datestamp>
+	     <oai:setSpec>col_10125_4272</oai:setSpec>
+      </oai:header>
+      <oai:metadata>
+        <olac:olac>
+          <dcterms:tableOfContents>DB1-156-A.wav</dcterms:tableOfContents>
+          <dcterms:tableOfContents>DB1-156-B.wav</dcterms:tableOfContents>
+          <dcterms:bibliographicCitation>Bickerton, Derek, Bickerton, Derek; n.d.; O3 #3 F.F. (WP) F-F-48; Florence Feguis (reading sample at middle of side B) 382-395. Florence Feguis 10-19-73.; Scotch AVC 90 cassette.; Kaipuleohone University of Hawai'i Digital Language Archive;http://hdl.handle.net/10125/32705.</dcterms:bibliographicCitation>          <dc:contributor xsi:type="olac:role" olac:code="researcher">Bickerton, Derek</dc:contributor>
+          <dc:contributor xsi:type="olac:role" olac:code="depositor">Bickerton, Derek</dc:contributor>
+          <dc:coverage xsi:type="dcterms:ISO3166">US</dc:coverage>
+          <dc:date xsi:type="dcterms:W3CDTF">n.d.</dc:date>
+          <dc:description>O3 #3 F.F. (WP) F-F-48; Florence Feguis (reading sample at middle of side B) 382-395. Florence Feguis 10-19-73.</dc:description>
+          <dc:description>Region: USA (Hawai'i)</dc:description>
+          <dc:format>Scotch AVC 90 cassette.</dc:format>
+          <dc:identifier xsi:type="dcterms:URI">http://hdl.handle.net/10125/32705</dc:identifier>
+          <dc:language xsi:type="olac:language" olac:code="hwc"/>
+          <dc:subject xsi:type="olac:language" olac:code="hwc" />
+          <dc:title>DB1-156</dc:title>
+          <dc:type xsi:type="olac:linguistic-type" olac:code="primary_text"/>
+          <dc:type xsi:type="dcterms:DCMIType">sound</dc:type>
+       </olac:olac>
+     </oai:metadata>
+   </oai:record>
+  </static:ListRecords>
+</Repository>

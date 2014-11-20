@@ -12,7 +12,7 @@
 		
 			<h4>Kaipuleohone is the University of Hawai'i's digital ethnographic archive for audio and video recordings as well as notes, dictionaries, transcriptions, and other materials related to small and endangered languages.</h4>
 
-			<p>Kaipuleohone means a <i>'gourd of sweet words'</i> and represents the notion of a collection of language material that would otherwise be unlocatable in personal collections.</p>
+			<p>Kaipuleohone means a <i>'gourd of sweet words'</i> and represents the notion of a collection of language material that would otherwise be unlocatable in personal collections. </p>
 		
 		</div>
 	</div>
@@ -33,6 +33,7 @@
 				<div class="col-md-12"><button id="filter_reset_btn" type="button" class="btn">Show All</button></div>
 				
 				<div class="col-md-12">
+					<div id="current_filter"></div>
 				{% for i in mapped_languages %}
 					<div class="mapped_language_selector" style="padding: 5px; font-color: black; float: left;">{{ i }}</div>
 				{% endfor %}
@@ -108,10 +109,10 @@
 			<div class="panel panel-default" id="collection">
 				<div class="panel-heading"><center><h3>Collections</h3></center></div>
 				<div class="list-group">
-					{% for collection in collections %}
-  						<a href="{{ collection.get_absolute_url }}" class="list-group-item">
-    						<span class="badge clr-collection">{{ collection.count_records }}</span>
-    						<span>{{ collection }}</span>
+					{% for i in collections %}
+  						<a href="{{ i.0.get_absolute_url }}" class="list-group-item">
+    						<span>{{ i.0 }}</span>
+    						<span class="badge clr-collection">{{ i.1 }}</span>
   						</a>
   					{% endfor %}
   				</div>
@@ -122,13 +123,14 @@
 			</div>
 		</div>
 		<div class="col-md-4">
+
 			<div class="panel panel-default"  id="language">
 				<div class="panel-heading"><center><h3>Languages</h3></center></div>
 				<div class="list-group">
-  					{% for language in languages %}
-  						<a href="{% url 'language' language.0 %}" class="list-group-item">
-    						<span class="badge clr-language">{{language.1 }}</span>
-    						<span>{{ language.0 }}</span>
+  					{% for i in languages %}
+  						<a href="{% url 'language' i.0 %}" class="list-group-item">
+    						<span>{{ i.0 }}</span>
+    						<span class="badge clr-language">{{ i.1 }}</span>
   						</a>
   					{% endfor %}
   				</div>
@@ -142,10 +144,10 @@
 			<div class="panel panel-default"  id="depositor">
 				<div class="panel-heading"><center><h3>Contributors</h3></center></div>
 				<div class="list-group">
-  					{% for contributor in contributors %}
-  						<a href="{% url 'contributor' contributor.0|slugify %}" class="list-group-item">
-    						<span class="badge clr-contributor">{{contributor.1}}</span>
-    						<span>{{ contributor.0 }}</span>
+  					{% for i in contributors %}
+  						<a href="{% url 'contributor' i.0|slugify %}" class="list-group-item">
+    						<span>{{ i.0 }}</span>
+    						<span class="badge clr-contributor">{{ i.1 }}</span>
   						</a>
   					{% endfor %}
   				</div>
@@ -170,7 +172,7 @@
 {% block js_include %} 
   <!--Google Map js libraries-->
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script> 
+  <!-- <script type="text/javascript" src="https://www.google.com/jsapi"></script>  -->
 
   <!-- Local js -->
   <script src="{% static 'js/dla.js' %}"></script>
