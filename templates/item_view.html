@@ -2,7 +2,7 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 
-{% block page_header %}<small>{{ object }}</small>{% endblock page_header %}
+{% block page_header %}<small><a href="{{ object.set_spec.get_absolute_url }}">{{ object.set_spec }}</a> {{ object }}</small>{% endblock page_header %}
 
 {% block content %}
 	<div class="row">

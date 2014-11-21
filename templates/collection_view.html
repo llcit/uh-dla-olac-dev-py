@@ -3,7 +3,7 @@
 {% load staticfiles %}
 
 
-{% block page_header %}{{ object }}{% endblock page_header %}
+{% block page_header %}<span class="small">back to <a href="{% url 'home' %}">Kaipuleohone</a> </span> <br> {{ object }}{% endblock page_header %}
 
 {% block content %}	
 
@@ -25,18 +25,49 @@
 		</div>
 
 		<!-- Google Map view controller -->
-		<div id="mapped_records_selector" class="col-md-6">		
-			<div class="row"><div class="col-md-12">
-				<legend>{{ records|length }} Records </legend>
-				<dl class="dl-horizontal">
-				{% for i in records %}
+		<div id="mapped_record_selector" class="col-md-6">
+			<legend>{{ records|length }} Records </legend>
+
+			<div class="row ">
+				<!-- Page filters -->
+				<div class="col-md-12">
+					<div class="col-md-2">Page</div>
+					<div class="col-md-10">
+						{% for i in pager %}
+							<div class="page_filter_selector btn" name="page {{ i }}" data-filter=".page_{{ i }}">{{ i }}</div>
+						{% endfor %}
+						<div class="page_filter_selector btn" name="all" data-filter="*">All</div>
+					</div>
+				</div>
+
+				<!-- Language filters -->
+				{% if collection_info.languages|length > 1 %}
+				<div class="col-md-12">
+					<div class="col-md-2">Languages</div>
+					<div class="col-md-10">
+						{% for i in collection_info.languages %}
+							<div class="page_filter_selector btn" name="language {{ i }}" data-filter=".{{ i }}">{{ i }}</div>
+						{% endfor %}
+						<div class="page_filter_selector btn" name="all" data-filter="*">All</div>
+					</div>
+				</div>
+				{% endif %}
 				
-					<dt><a href="{{ i.url }}">{{ i.title }}</a></dt>
-					{% for j in i.description %}<dd>{{ j }}</dd> {% endfor %}
-					<hr>
-				{% endfor %}
-				</dl>
-			</div></div>		
+				<div class="col-md-12 small" style="text-align: right; padding: 1.0em">Showing <span id="curr_page_filter">1</span>.</div>
+				<!-- Record list -->
+				<div class="col-md-12 ">
+					<dl class="dl-horizontal filter_container">
+					{% for i in records %}
+						<div class="page_{{ i.page }} {% for j in i.languages %} {{ j }} {% endfor %}"> 						
+							<dt><a href="{{ i.url }}">{{ i.title }}</a></dt>
+							{% for j in i.description %}<dd>{{ j }}</dd> {% endfor %}
+							<hr>
+						</div>	
+						
+					{% endfor %}
+					</dl>
+				</div>
+			</div>		
 
 		</div>
 	</div>

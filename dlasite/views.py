@@ -12,6 +12,7 @@ from .mixins import RecordSearchMixin, MapDataMixin, RepositoryInfoMixin
 from .models import RepositoryCache
 from .forms import CreateRepositoryForm, HarvestRepositoryForm, CollectionsUpdateForm
 
+
 class HomeView(MapDataMixin, RepositoryInfoMixin, TemplateView):
     template_name = 'home.html'
     
@@ -93,22 +94,26 @@ class CollectionView(MapDataMixin, RepositoryInfoMixin, DetailView):
         context = super(CollectionView, self).get_context_data(**kwargs)
 
         d = self.get_object().as_dict()
-        for k, v in d.items():
-            try: 
-                d[k] = ', '.join(v)
-            except:
-                d[k] = v[0]
-                pass
-        
+               
         context['collection_info'] = d
+        records = []
+        pager = set()
+        page_cnt = 0
+        page_length = 5
+        for i in self.get_object().list_records().order_by('identifier'):          
+            records.append(
+                {
+                    'title':        i.get_metadata_item('title')[0].element_data, 
+                    'description':  [j.element_data for j in i.get_metadata_item('description')],
+                    'url':          i.get_absolute_url(),
+                    'languages':    i.list_languages(),
+                    'page':         (page_cnt / page_length) + 1        
+                }
+            )
+            pager.add((page_cnt / page_length) + 1)
+            page_cnt += 1
 
-        records = [{
-            'title':        i.get_metadata_item('title')[0].element_data, 
-            'description':  [j.element_data for j in i.get_metadata_item('description')],
-            'url':          i.get_absolute_url()
-            } for i in self.get_object().list_records().order_by('identifier')
-            ]
-
+        context['pager'] = list(pager)
         context['records'] = records
         context['size'] = len(context['records'])
         return context

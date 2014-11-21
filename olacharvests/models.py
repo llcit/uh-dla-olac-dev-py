@@ -108,9 +108,7 @@ class Collection(TimeStampedModel):
         languages = set()
 
         for record in self.list_records():
-            language_data = [
-                i.element_data for i in record.get_metadata_item('subject.language')]
-            [languages.add(i) for i in language_data]
+            [languages.add(i) for i in record.list_languages()]
 
         return list(languages)
 
@@ -209,6 +207,12 @@ class Record(TimeStampedModel):
         plot = json.loads(map_data[0].element_data)
         return Plot(plot['east'], plot['north']) 
 
+    def list_languages(self):
+        """ Returns a list of languages pruned from records in this collection. """
+        languages = set()        
+        [languages.add(i.element_data) for i in self.get_metadata_item('subject.language')]
+        return list(languages)
+
     def make_update(self, datestamp_str):
         newdate = datetime.datetime.strptime(datestamp_str, '%Y-%m-%d').date()
         curdate = datetime.datetime.strptime(self.datestamp, '%Y-%m-%d').date()
@@ -216,7 +220,7 @@ class Record(TimeStampedModel):
 
     def __unicode__(self):
         title = self.get_metadata_item('title')[0].element_data
-        return '%s - %s' % (self.set_spec, title)
+        return '%s' % (title)
 
     def get_absolute_url(self):
         return reverse('item', args=[str(self.id)])

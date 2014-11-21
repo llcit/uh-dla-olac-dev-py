@@ -19,29 +19,43 @@ var infowindow;
 
 jQuery(function($) {
     // init Isotope
-    var $container = $('.mapitem_container').isotope({
+    var $container = $('.filter_container').isotope({
+        layoutMode: 'fitRows',
+        filter: '.page_1'
+    });
+
+    var $map_container = $('.map_filter_container').isotope({
         layoutMode: 'fitRows',
     });
 
     // reset isotopes filters
     $("#filter_reset_btn").click(function () {
-        $container.isotope({ filter: "" });
+        $map_container.isotope({ filter: "" });
         map.setZoom(2);
         $("#current_filter").html("");
         $("#filter_reset_btn").css( "display", "none");
+    });
+
+    //
+    $(".page_filter_selector").click(function () {
+        $(".filter_selected").removeClass("filter_selected");
+        $(this).addClass("filter_selected");
+        $("#curr_page_filter").html($(this).attr('name'));
+        var f =  $(this).attr('data-filter');
+        $container.isotope({ filter: f });
     });
 
     // language filter
     $(".mapped_language_selector").click(function () {
         if( $(this).hasClass("map_language_selected") ) {
             $(this).removeClass("map_language_selected");
-            $container.isotope({ filter: "" });
+            $map_container.isotope({ filter: "" });
             $("#filter_reset_btn").css( "display", "none");
         } else {
             $(".map_language_selected").removeClass("map_language_selected");
             $(this).addClass("map_language_selected");
             var f = "."+$(this).html();
-            $container.isotope({ filter: f });
+            $map_container.isotope({ filter: f });
             $("#filter_reset_btn").css( "display", "inline");
         }        
     });

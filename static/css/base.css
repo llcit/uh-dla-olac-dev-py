@@ -29,7 +29,7 @@ ul {
   width: 100%;
 }
 
-.mapped_collection_selector, .mapped_language_selector, .mapped_record_selector {
+.mapped_collection_selector, .mapped_language_selector, .mapped_record_selector, .page_filter_selector {
   cursor: pointer;
   margin: 10px;
   background-color: #7A7A7B;

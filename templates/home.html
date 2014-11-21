@@ -27,21 +27,12 @@
 
 		<!-- Google Map view controller -->
 		<div id="mapped_records_selector" class="col-md-6">
-			
-			<!-- Mapped languages selector: filters mapped record selectors -->
 			<div class="row">
 				<div class="col-md-12"><button id="filter_reset_btn" type="button" class="btn">Show All</button></div>
-				
-				<div class="col-md-12">
-					<div id="current_filter"></div>
-				{% for i in mapped_languages %}
-					<div class="mapped_language_selector" style="padding: 5px; font-color: black; float: left;">{{ i }}</div>
-				{% endfor %}
-				</div>	
 			</div>
 			
 			<!-- Mapped collection selector: displays infowindow for a selected collection in google map -->
-			<div class="mapitem_container mapped_collection">
+			<div class="map_filter_container mapped_collection">
 				
 				{% for i in mapped_collections %}
 			 		<div class="mapped_collection_selector
