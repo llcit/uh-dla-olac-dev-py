@@ -20,7 +20,7 @@ var infowindow;
 jQuery(function($) {
     // init Isotope
     var $container = $('.filter_container').isotope({
-        layoutMode: 'fitRows',
+        layoutMode: 'vertical',
         filter: '.page_1'
     });
 
