@@ -19,41 +19,41 @@ from dlasite.views import (
 
 urlpatterns = patterns('',
 
-	url(r'^$', HomeView.as_view(), name='home'),
+	url(r'^dla/$', HomeView.as_view(), name='home'),
 	
-	url(r'^repository/info/(?P<slug>[-\w]+)/$',
+	url(r'^dla/repository/info/(?P<slug>[-\w]+)/$',
 	   RepositoryView.as_view(), name='olac_repository'),
 	
-	url(r'^repository/add/$',
+	url(r'^dla/repository/add/$',
 	   RepositoryCreateView.as_view(), name='add_repository'),
 
-	url(r'^repository/delete/$',
+	url(r'^dla/repository/delete/$',
 	   RepositoryResetView.as_view(), name='delete_repository'),
 	
-	url(r'^repository/harvest/(?P<slug>[-\w]+)/$',
+	url(r'^dla/repository/harvest/(?P<slug>[-\w]+)/$',
 	   RepositoryHarvestUpdateView.as_view(), name='harvest_repository'),
 
-	url(r'^collections/update/$', CollectionsUpdateView.as_view(),
+	url(r'^dla/collections/update/$', CollectionsUpdateView.as_view(),
 	   name='collections_update'),
 	
 	
-	url(r'^collections/$', CollectionListView.as_view(), name='collection_list'),
+	url(r'^dla/collections/$', CollectionListView.as_view(), name='collection_list'),
 	
 
 
 
-	url(r'^collection/(?P<slug>[-\w]+)/$',
+	url(r'^dla/collection/(?P<slug>[-\w]+)/$',
 	   CollectionView.as_view(), name='collection'),
-	url(r'^item/(?P<pk>\w+)$',
+	url(r'^dla/item/(?P<pk>\w+)$',
 	   ItemView.as_view(), name='item'),
-	url(r'^language/(?P<query>\w+)$',
+	url(r'^dla/language/(?P<query>\w+)$',
 	   LanguageView.as_view(), name='language'),
-	url(r'^contributor/(?P<query>[-\w]+)$',
+	url(r'^dla/dla/contributor/(?P<query>[-\w]+)$',
 	   ContributorView.as_view(), name='contributor'),
-	url(r'^search/$', SearchView.as_view(), name='search'),
-	url(r'^searchtest/$', SearchPage.as_view(),
+	url(r'^dla/search/$', SearchView.as_view(), name='search'),
+	url(r'^dla/searchtest/$', SearchPage.as_view(),
 	   name='searchtest'),
 
 
-	url(r'^admin/', include(admin.site.urls)),
+	url(r'^dla/admin/', include(admin.site.urls)),
 )

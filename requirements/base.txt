@@ -1,8 +1,13 @@
 Django==1.7.1
+Fabric==1.10.0
+Unipath==1.0
+django-debug-toolbar==1.2.2
 django-model-utils==2.2
-lxml==3.4.0
+ecdsa==0.11
+lxml==3.4.2
+paramiko==1.15.1
 psycopg2==2.5.4
+pycrypto==2.6.1
 pyoai==2.4.4
 sqlparse==0.1.13
-Unipath==1.0
 wsgiref==0.1.2
