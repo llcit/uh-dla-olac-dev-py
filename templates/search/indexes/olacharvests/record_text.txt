@@ -1,0 +1,5 @@
+{{ object.set_spec }}
+{{ object.id }}
+{{ object.list_languages }}
+{{ object.get_title }}
+

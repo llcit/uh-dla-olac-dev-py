@@ -36,22 +36,13 @@ jQuery(function($) {
         $("#filter_reset_btn").css( "display", "none");
     });
 
-    // page filter
+    //
     $(".page_filter_selector").click(function () {
         $(".filter_selected").removeClass("filter_selected");
         $(this).addClass("filter_selected");
+        $("#curr_page_filter").html($(this).attr('name'));
         var f =  $(this).attr('data-filter');
         $container.isotope({ filter: f });
-        $("#curr_page_filter").html($(this).attr('name')+" ("+$(f).length+" items)" );
-    });
-
-    // record filter
-    $(".record_filter_selector").click(function () {
-        $(".filter_selected").removeClass("filter_selected");
-        $(this).addClass("filter_selected");
-        var f =  $(this).attr('data-filter');
-        $container.isotope({ filter: f });
-        $("#curr_page_filter").html($(this).attr('name')+" ("+$(f).length+" items)" );
     });
 
     // language filter

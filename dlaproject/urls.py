@@ -17,7 +17,18 @@ from dlasite.views import (
 	RepositoryHarvestUpdateView
 )
 
+# Experimenting with faceting 
+from haystack.forms import FacetedSearchForm
+from haystack.query import SearchQuerySet
+from haystack.views import FacetedSearchView
+
+
+sqs = SearchQuerySet().facet('e_type')
+
 urlpatterns = patterns('',
+	url(r'^search/$', FacetedSearchView(form_class=FacetedSearchForm, searchqueryset=SearchQuerySet().facet('e_type')), name='haystack_search'),
+
+	# url(r'^search/$', include('haystack.urls')),
 
 	url(r'^dla/$', HomeView.as_view(), name='home'),
 	
@@ -48,7 +59,7 @@ urlpatterns = patterns('',
 	   ItemView.as_view(), name='item'),
 	url(r'^dla/language/(?P<query>\w+)$',
 	   LanguageView.as_view(), name='language'),
-	url(r'^dla/dla/contributor/(?P<query>[-\w]+)$',
+	url(r'^dla/contributor/(?P<query>[-\w]+)$',
 	   ContributorView.as_view(), name='contributor'),
 	url(r'^dla/search/$', SearchView.as_view(), name='search'),
 	url(r'^dla/searchtest/$', SearchPage.as_view(),

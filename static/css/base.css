@@ -32,8 +32,8 @@ ul {
 .mapped_collection_selector, .mapped_language_selector, .mapped_record_selector, .page_filter_selector {
   cursor: pointer;
   margin: 10px;
-  background-color: #7A7A7B;
-  color: white;
+  /*background-color: #7A7A7B;*/
+  /*color: white;*/
   padding: 5px;
 }
 
@@ -84,7 +84,7 @@ ul {
 /******************************** Map and Table **********************************************/
 #map-canvas{
     /*text-align: center;*/
-    background-color: lightgrey;
+    /*background-color: lightgrey;*/
     float: right;
     /*margin: 0 auto;*/
     width: 100%;

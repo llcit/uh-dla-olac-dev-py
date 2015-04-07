@@ -33,6 +33,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'haystack',
+
     'olacharvests',
     'dlasite',
 )
@@ -74,3 +76,18 @@ STATICFILES_DIRS = (PROJECT_DIR.child('static'),)
 STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = (PROJECT_DIR.child('templates'),)
+
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'kaipuleohone_stack',
+    },
+}
+
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 1000
+
+
+
+

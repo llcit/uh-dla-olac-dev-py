@@ -1,0 +1,6 @@
+{{ object.record.set_spec.name }}
+{{ object.record }}
+{{ object.record.list_languages }}
+{{ object.element_type }}
+{{ object.element_data }}
+

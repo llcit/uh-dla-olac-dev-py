@@ -13,13 +13,13 @@ Plot = namedtuple('Plot', ['east', 'north'])
 
 class Repository(TimeStampedModel):
 
-    """ 
+    """
     An OLAC static repository. This kind of repository collapses
     the distinction made by OAI repositories. The OLAC concept of
     repository correlates with the OAI Set (Community/Collection).
     The xml root element name is Repository.
 
-    The properties of this class are mostly assigned from the <IDENTIFY> 
+    The properties of this class are mostly assigned from the <IDENTIFY>
     element tree.
 
     See: http://www.language-archives.org/OLAC/1.1/static-repository.xml
@@ -72,7 +72,7 @@ class Collection(TimeStampedModel):
 
     """
     Models the OAI standard conception of a SET. OLAC does not
-    distinguish sets and supersets. Collection instances are populated 
+    distinguish sets and supersets. Collection instances are populated
     using the OAI-PMH standard (pyoai module needed for this)
     """
 
@@ -136,12 +136,19 @@ class Collection(TimeStampedModel):
 class Record(TimeStampedModel):
 
     """
-    OLAC conception of an ITEM. Mainly populated with the header element 
+    OLAC conception of an ITEM. Mainly populated with the header element
     of the metadata standard.
     """
     identifier = models.CharField(max_length=256, unique=True)
     datestamp = models.CharField(max_length=48)
     set_spec = models.ForeignKey(Collection, null=True, blank=True)
+
+    def get_title(self):
+        try:
+            title = self.data.filter(element_type='title')[0].element_data
+        except:
+            title = ''
+        return title
 
     def remove_data(self):
         MetadataElement.objects.filter(record=self).delete()
@@ -200,16 +207,16 @@ class Record(TimeStampedModel):
         return record_dict
 
     def get_map_plot(self):
-        """ Returns a Plot namedtuple object or None if no map data assigned to this record """  
+        """ Returns a Plot namedtuple object or None if no map data assigned to this record """
         map_data = self.get_metadata_item('spatial')
         if not map_data:
             return None
         plot = json.loads(map_data[0].element_data)
-        return Plot(plot['east'], plot['north']) 
+        return Plot(plot['east'], plot['north'])
 
     def list_languages(self):
         """ Returns a list of languages pruned from records in this collection. """
-        languages = set()        
+        languages = set()
         [languages.add(i.element_data) for i in self.get_metadata_item('subject.language')]
         return list(languages)
 
@@ -243,7 +250,7 @@ class MetadataElement(models.Model):
 class ArchiveMetadataElement(models.Model):
 
     """
-    A archive informationtuple containing an 
+    A archive informationtuple containing an
     element_type (dublin core/olac) and its data
     """
     repository = models.ForeignKey(

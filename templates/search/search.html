@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+    <h2>Search</h2>
+
+<form method="get" action=".">
+    <table>
+        <tbody>
+            {{ form.as_p}}
+            <tr>
+                <td>&nbsp;</td>
+                <td><input type="submit" value="Search"></td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+{{ facets }}
+{% if query %}
+    <!-- Begin faceting. -->
+    <h2>By Meta</h2>
+
+    <div>
+        <dl>
+            {% if facets.fields.e_type %}
+                <dt>META TYPE</dt>
+                {% for etype in facets.fields.e_type %}
+                    <dd><a href="{{ request.get_full_path }}&amp;selected_facets=e_type_exact:{{ etype.0|urlencode }}">{{ etype.0 }}</a> ({{ etype.1 }})</dd>
+                {% endfor %}
+            {% else %}
+                <p>No element type facets.</p>
+            {% endif %}
+        </dl>
+    </div>
+    <!-- End faceting -->
+
+    <!-- Display results... -->
+    {{object}}
+    {% for result in page.object_list %}
+        <div class="search_result">
+            <h3><a href="{{ result.object.record.get_absolute_url }}">{{ result.object.record }}</a></h3>
+
+            <p>{{ result.object|truncatewords:80 }}</p>
+        </div>
+    {% empty %}
+        <p>Sorry, no results found.</p>
+    {% endfor %}
+{% endif %}
+{% endblock %}
