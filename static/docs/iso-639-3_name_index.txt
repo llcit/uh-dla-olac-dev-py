@@ -1,4 +1,3 @@
-Id	Print_Name	Inverted_Name
 aaa	Ghotuo	Ghotuo
 aab	Alumu-Tesu	Alumu-Tesu
 aac	Ari	Ari

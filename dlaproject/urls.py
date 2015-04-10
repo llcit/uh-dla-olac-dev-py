@@ -30,7 +30,7 @@ urlpatterns = patterns('',
 
     # url(r'^search/$', include('haystack.urls')),
 
-    url(r'^/$', HomeView.as_view(), name='home'),
+    url(r'^$', HomeView.as_view(), name='home'),
     url(r'^/repository/info/(?P<slug>[-\w]+)/$', RepositoryView.as_view(), name='olac_repository'),
     url(r'^/repository/add/$', RepositoryCreateView.as_view(), name='add_repository'),
     url(r'^/repository/delete/$', RepositoryResetView.as_view(), name='delete_repository'),
