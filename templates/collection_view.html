@@ -3,16 +3,17 @@
 {% load staticfiles %}
 
 
-{% block page_header %}<span class="small">back to <a href="{% url 'home' %}">Kaipuleohone</a> </span> <br> {{ object }}{% endblock page_header %}
+{% block page_header %}<span class="small">back to <a href="{% url 'home' %}">Kaipuleohone</a> </span> <br> {{ collection_obj }}{% endblock page_header %}
 
 {% block content %}
 
 	<div class="row">
-		<!-- Google Map display panel -->
+		<!-- Left panel: Google Map display panel and collection info -->
 
 		<div class="col-md-6">
 			<div class="row"><div id="map-canvas" style="width: 100%"></div></div>
-			<div class="row"><div class="col-md-12">
+
+            <div class="row"><div class="col-md-12">
 				<legend>About the Collection</legend>
 				<dl class="dl-horizontal">
 				{% for k, v in collection_info.items %}
@@ -25,53 +26,56 @@
 			</div></div>
 		</div>
 
-		<!-- Google Map view controller -->
+		<!-- Right panel: Filter controllers (using Isotope library) -->
 		<div id="mapped_record_selector" class="col-md-6">
 			<legend>{{ records|length }} Records </legend>
 
 			<div class="row ">
 				<!-- Page filters -->
-				<div class="col-md-12">
-					<div class="col-md-2">Page</div>
-					<div class="col-md-10">
+				<div class="col-md-12 clearfix">
+					<div class="pull-left">
+                        Filter by page <i class="fa fa-arrow-right"></i>
 						{% for i in pager %}
-							<div class="page_filter_selector btn" name="page {{ i }}" data-filter=".page_{{ i }}">{{ i }}</div>
+							<div class="page_filter_selector btn btn-default btn-xs" name="page {{ i }}" data-filter=".page_{{ i }}">{{ i }}</div>
 						{% endfor %}
-						<div class="page_filter_selector btn" name="all" data-filter=".record_item">All</div>
+						<div class="page_filter_selector btn btn-default btn-xs" name="all" data-filter=".record_item">All</div>
 					</div>
 				</div>
 
 				<!-- Language filters -->
 				{% if collection_languages|length > 1 %}
-				<div class="col-md-12">
-					<div class="col-md-2"><span>Languages:</span></div>
-					<div class="col-md-10">
-
+				<div class="col-md-12 clearfix">
+					<div class="pull-left">
+                        Filter by language <i class="fa fa-arrow-right"></i>
 						{% for i in collection_languages %}
-							<span class="record_filter_selector btn" name="language {{ i }}" data-filter=".{{ i }}">{{ i }}</span>
+							<div class="record_filter_selector btn btn-default btn-xs" name="language {{ i.name }}" data-filter=".{{ i.code }}">{{ i.name }}</div>
 						{% endfor %}
-						<span class="record_filter_selector btn" name="all" data-filter=".record_item">All</span>
+
+						<div class="record_filter_selector btn btn-default btn-xs" name="all" data-filter=".record_item">All</div>
 					</div>
 				</div>
 				{% endif %}
 
-				<div class="col-md-12 small" style="text-align: right; padding: 1.0em">Showing <span id="curr_page_filter"> page 1</span>.</div>
+				<div class="col-md-12 clearfix" style="text-align: left; padding: 1.0em">Showing <span id="curr_page_filter"> page 1 (10</span> of {{ records|length }} records).</div>
 
                 <!-- Record list -->
-				<div class="col-md-12 ">
-					<dl class="dl-horizontal filter_container">
-
-                    {% for i in records %}
-						<div class="record_item page_{{i.page}} {% for lang in i.languages %} {{ lang }} {% endfor %}">
-							<dt><a href="{{ i.url }}" >{{i.title}}</a> {% for lang in i.languages %} {{ lang }} {% endfor %} {{i.description}}</dt>
+				<div class="col-md-12 filter_container">
+					{% for i in records %}
+                    	<div class="record_item page_{{i.page}} {% for lang in i.languages %} {{ lang.code }} {% endfor %}">
+							<dl>
+                                <dt>
+                                    <a href="{{ i.url }}" >{{i.title}}</a>
+                                    {% for lang in i.languages %} <span class="language_label label label-default">{{ lang.name }}</span> {% endfor %}
+                                    <span>{{i.description}}</span>
+                                </dt>
+                            </dl>
 						</div>
 					{% endfor %}
-
-					</dl>
 				</div>
 			</div>
-
+            <h1></h1>
 		</div>
+
 	</div>
 
 {% endblock content %}

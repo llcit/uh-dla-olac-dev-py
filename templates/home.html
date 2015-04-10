@@ -6,20 +6,20 @@
 {% block page_header %}{% endblock page_header %}
 
 {% block content %}
-	
+
 	<div class="row">
 		<div class="col-md-12">
-		
+
 			<h4>Kaipuleohone is the University of Hawai'i's digital ethnographic archive for audio and video recordings as well as notes, dictionaries, transcriptions, and other materials related to small and endangered languages.</h4>
 
 			<p>Kaipuleohone means a <i>'gourd of sweet words'</i> and represents the notion of a collection of language material that would otherwise be unlocatable in personal collections. </p>
-		
+
 		</div>
 	</div>
-	
+
 	<div class="row">
 		<div class="col-md-12">
-			<h2>Globe Trekker</h2>	
+			<h2>Globe Trekker</h2>
 		</div>
 
 		<!-- Google Map display panel -->
@@ -30,10 +30,10 @@
 			<div class="row">
 				<div class="col-md-12"><button id="filter_reset_btn" type="button" class="btn">Show All</button></div>
 			</div>
-			
+
 			<!-- Mapped collection selector: displays infowindow for a selected collection in google map -->
 			<div class="map_filter_container mapped_collection">
-				
+
 				{% for i in mapped_collections %}
 			 		<div class="mapped_collection_selector
 			 			{% for j in i.map_plots %}
@@ -55,7 +55,7 @@
 							{% for j in i.map_plots %} {{ j.east }} {% endfor %}
 						">
 						<input class="collection" type="hidden" name="collection" value="{{ i.name }}">
-						
+
 						<input class="site_url" type="hidden" name="site_url" value="{{ i.site_url }}">
 			 		</div>
 				{% endfor %}
@@ -150,7 +150,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 {% endblock content %}
 
 {% block js_script %}
@@ -163,18 +163,18 @@
 			        minZoom:1,
 			        center: {lat: 19.50056, lng: 155.50056}, // Center to Hawaii
 			        mapTypeId: google.maps.MapTypeId.HYBRID
-			};        	
+			};
         }
 
     </script>
-{% endblock js_script %} 
-  
-{% block js_include %} 
+{% endblock js_script %}
+
+{% block js_include %}
   <!--Google Map js libraries-->
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
-  
+
   <!-- Local map init setup  -->
   <script src="{% static 'js/map-init.js' %}"></script>
 
-{% endblock js_include %}			
+{% endblock js_include %}
 

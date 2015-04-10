@@ -1,0 +1,3 @@
+{{ object.code }}
+{{ object.print_name }}
+{{ object.print_inverted_name }}

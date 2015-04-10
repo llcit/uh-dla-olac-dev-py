@@ -24,11 +24,20 @@ class HomeView(MapDataMixin, RepositoryInfoMixin, TemplateView):
         context = super(HomeView, self).get_context_data(**kwargs)
         repo_cache = RepositoryCache.objects.all()[0]
 
-        languages = json.loads(repo_cache.language_list)
-        context['languages'] = sorted(languages.items(), key=operator.itemgetter(1), reverse=True)
+        # languages = json.loads(repo_cache.language_list)
+        # context['languages'] = sorted(languages.items(), key=operator.itemgetter(1), reverse=True)
 
-        contributors = json.loads(repo_cache.contributor_list)
-        context['contributors'] = sorted(contributors.items(), key=operator.itemgetter(1), reverse=True)
+        # Create language list using haystack.
+        langs = SearchQuerySet().filter(e_type='subject.language').facet('e_data')
+        context['languages'] = langs.facet_counts()['fields']['e_data']
+
+
+        # contributors = json.loads(repo_cache.contributor_list)
+        # context['contributors'] = sorted(contributors.items(), key=operator.itemgetter(1), reverse=True)
+
+        contribs = SearchQuerySet().filter(e_type__contains='contributor').facet('e_data')
+        context['contributors'] = contribs.facet_counts()['fields']['e_data']
+
 
         # Create collections list
         collections = [(i, i.count_records()) for i in Collection.objects.all()]
@@ -90,15 +99,26 @@ class CollectionListView(RepositoryInfoMixin, ListView):
 
 class CollectionView(MapDataMixin, RepositoryInfoMixin, DetailView):
     model = Collection
+    context_object_name = 'collection_obj'
     template_name = 'collection_view.html'
 
     def get_context_data(self, **kwargs):
         context = super(CollectionView, self).get_context_data(**kwargs)
-        collection_languages = self.get_object().list_languages()
+        curr_collection = self.get_object()
 
-        self.queryset = SearchQuerySet().filter(collection=self.get_object().name)
+        self.queryset = SearchQuerySet().filter(collection=curr_collection.name)
 
-        records = [] # building presentation data here instead of in template.
+        """ Building collection and record presentation data here rather than in template."""
+        collection_dict = curr_collection.as_dict()
+        for k, v in collection_dict.items():
+            try:
+                collection_dict[k] = ', '.join(v)
+            except:
+                collection_dict[k] = v[0]
+                pass
+
+        collection_languages = curr_collection.list_subject_languages_as_tuples()
+        records = []
         page = 0
         pager = []
         for i in self.queryset:
@@ -106,13 +126,17 @@ class CollectionView(MapDataMixin, RepositoryInfoMixin, DetailView):
             r['page'] = len(pager)+1
             r['title'] = i.object.get_title()
             r['url'] = i.object.get_absolute_url()
-            r['languages'] = i.object.list_languages()
+            r['languages'] = i.object.list_subject_languages_as_tuples()
             r['description'] = i.object.get_metadata_item('description')[0].element_data
             records.append(r)
             page = page + 1
             if page % 10 == 0:
                 pager.append(len(pager)+1)
 
+        if page % 10 > 0:
+            pager.append(len(pager)+1)
+
+        context['collection_info'] = collection_dict
         context['records'] = records
         context['pager'] = pager
         context['collection_languages'] = collection_languages

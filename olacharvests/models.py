@@ -1,3 +1,5 @@
+import json, operator, datetime
+
 from django.db import models
 from django.core.urlresolvers import reverse
 from model_utils.models import TimeStampedModel
@@ -5,11 +7,13 @@ from collections import OrderedDict
 from django.utils.text import slugify
 from collections import namedtuple
 
-import json, operator, datetime
+from haystack.query import SearchQuerySet
 
 """ A namedtuple to handle unique points to plot """
 Plot = namedtuple('Plot', ['east', 'north'])
 
+""" A namedtuple to handle language codes and indexed name. """
+Language = namedtuple('Language', ['code', 'name'])
 
 class Repository(TimeStampedModel):
 
@@ -111,6 +115,19 @@ class Collection(TimeStampedModel):
             [languages.add(i) for i in record.list_languages()]
 
         return list(languages)
+
+    def list_subject_languages_as_tuples(self):
+        """ Returns a list of subject.language tuples (code, print_name) pruned from records in this collection."""
+
+        languages = set()
+        for record in self.list_records():
+            [languages.add(i) for i in record.list_languages()]
+
+        language_list = []
+        for i in list(languages):
+            for j in SearchQuerySet().filter(code=i):
+                language_list.append(Language(j.code, j.print_name))
+        return language_list
 
     def as_dict(self):
         """ Returns a dictionary representation of the collection data as k,v = {type: data list}"""
@@ -215,10 +232,20 @@ class Record(TimeStampedModel):
         return Plot(plot['east'], plot['north'])
 
     def list_languages(self):
-        """ Returns a list of languages pruned from records in this collection. """
+        """ Returns a list of languages listed in this record """
         languages = set()
         [languages.add(i.element_data) for i in self.get_metadata_item('subject.language')]
         return list(languages)
+
+    def list_subject_languages_as_tuples(self):
+        """ Returns a list of subject.language tuples (code, print_name) listed in this record."""
+        languages = set()
+        [languages.add(i.element_data) for i in self.get_metadata_item('subject.language')]
+        language_list = []
+        for i in list(languages):
+            for j in SearchQuerySet().filter(code=i):
+                language_list.append(Language(j.code, j.print_name))
+        return language_list
 
     def make_update(self, datestamp_str):
         newdate = datetime.datetime.strptime(datestamp_str, '%Y-%m-%d').date()
@@ -263,3 +290,22 @@ class ArchiveMetadataElement(models.Model):
 
     def get_absolute_url(self):
         pass  # return reverse('collection', args=[str(self.id)])
+
+class ISOLanguageNameIndex(models.Model):
+    """
+    Models the ISO 693-3 Language Names Index
+    http://www-01.sil.org/iso639-3/download.asp
+    CREATE TABLE [ISO_639-3_Names] (
+         Id             char(3)     NOT NULL,  -- The three-letter 639-3 identifier
+         Print_Name     varchar(75) NOT NULL,  -- One of the names associated with this identifier
+         Inverted_Name  varchar(75) NOT NULL)  -- The inverted form of this Print_Name form
+    """
+
+    code = models.CharField(max_length=3)
+    print_name = models.CharField(max_length=75)
+    inverted_name = models.CharField(max_length=75, blank=True, null=True)
+
+    def __unicode__(self):
+        return u'%s' % (self.print_name)
+
+

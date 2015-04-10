@@ -12,9 +12,19 @@
 """
 from haystack import indexes
 
-from olacharvests.models import Record, MetadataElement
+from olacharvests.models import Record, MetadataElement, ISOLanguageNameIndex
 
+class LanguageIndex(indexes.SearchIndex, indexes.Indexable):
+    text = indexes.CharField(document=True, use_template=True)
+    code = indexes.CharField(model_attr='code')
+    print_name = indexes.CharField(model_attr='print_name')
 
+    def get_model(self):
+        return ISOLanguageNameIndex
+
+    def index_queryset(self, using=None):
+        """Used when the entire index for model is updated."""
+        return self.get_model().objects.all()
 
 class RecordIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)

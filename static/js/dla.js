@@ -40,9 +40,10 @@ jQuery(function($) {
     $(".page_filter_selector").click(function () {
         $(".filter_selected").removeClass("filter_selected");
         $(this).addClass("filter_selected");
+
         var f =  $(this).attr('data-filter');
         $container.isotope({ filter: f });
-        $("#curr_page_filter").html($(this).attr('name')+" ("+$(f).length+" items)" );
+        $("#curr_page_filter").html($(this).attr('name')+" ("+$(f).length);
     });
 
     // record filter
@@ -51,7 +52,7 @@ jQuery(function($) {
         $(this).addClass("filter_selected");
         var f =  $(this).attr('data-filter');
         $container.isotope({ filter: f });
-        $("#curr_page_filter").html($(this).attr('name')+" ("+$(f).length+" items)" );
+        $("#curr_page_filter").html($(this).attr('name')+" ("+$(f).length);
     });
 
     // language filter
@@ -190,7 +191,7 @@ jQuery(function($) {
         }
 
         function showItems (actual_page,num_pages,elements,collection,type){
-            var pivot=actual_page*10;;
+            var pivot=actual_page*10;
             //last page
             if(actual_page==num_pages){
                 $(elements).addClass("disabled");

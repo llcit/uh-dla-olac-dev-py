@@ -1,5 +1,5 @@
 {{ object.set_spec }}
 {{ object.id }}
-{{ object.list_languages }}
+{{ object.list_subject_languages_as_tuples }}
 {{ object.get_title }}
 
