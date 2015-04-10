@@ -118,14 +118,14 @@
 
 			<div class="panel panel-default"  id="language">
 				<div class="panel-heading"><center><h3>Languages</h3></center></div>
-				<div class="list-group">
+				<ul class="list-group">
   					{% for i in languages %}
-  						<a href="{% url 'language' i.0 %}" class="list-group-item">
-    						<span>{{ i.0 }}</span>
-    						<span class="badge clr-language">{{ i.1 }}</span>
+  						<a href="{% url 'language' i.element_data %}" class="list-group-item">
+    						<span>{% for j in i.print_name %} {{ j.print_name }} {% endfor %} ({{ i.element_data }})</span>
+    						<span class="badge clr-language">{{ i.hits }}</span>
   						</a>
   					{% endfor %}
-  				</div>
+  				</ul>
   				<ul class="pager">
 				  <li class="previous disabled" id="prev_lan"><a class="language" >&larr; Previous</a></li>
 				  <li class="next" id="next_lan"><a  class="language" >Next &rarr;</a></li>
@@ -137,9 +137,9 @@
 				<div class="panel-heading"><center><h3>Contributors</h3></center></div>
 				<div class="list-group">
   					{% for i in contributors %}
-  						<a href="{% url 'contributor' i.0|slugify %}" class="list-group-item">
-    						<span>{{ i.0 }}</span>
-    						<span class="badge clr-contributor">{{ i.1 }}</span>
+  						<a href="{% url 'contributor' i.element_data|slugify %}" class="list-group-item">
+    						<span>{{ i.element_data }}</span>
+    						<span class="badge clr-contributor">{{ i.hits }}</span>
   						</a>
   					{% endfor %}
   				</div>

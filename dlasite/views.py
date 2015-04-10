@@ -5,11 +5,13 @@ from django.template import RequestContext
 from django.http import HttpResponse, Http404
 from django.db.models import Q, Count
 from collections import Counter, namedtuple
-import datetime, json, operator
+import datetime
+import json
+import operator
 
 from haystack.query import SearchQuerySet
 
-from olacharvests.models import Repository, Collection, Record, MetadataElement, ArchiveMetadataElement
+from olacharvests.models import Repository, Collection, Record, MetadataElement, ArchiveMetadataElement, ISOLanguageNameIndex
 from .mixins import RecordSearchMixin, MapDataMixin, RepositoryInfoMixin
 from .models import RepositoryCache
 from .forms import CreateRepositoryForm, HarvestRepositoryForm, CollectionsUpdateForm
@@ -28,21 +30,30 @@ class HomeView(MapDataMixin, RepositoryInfoMixin, TemplateView):
         # context['languages'] = sorted(languages.items(), key=operator.itemgetter(1), reverse=True)
 
         # Create language list using haystack.
-        langs = SearchQuerySet().filter(e_type='subject.language').facet('e_data')
-        context['languages'] = langs.facet_counts()['fields']['e_data']
+        # langs = SearchQuerySet().filter(
+        #     e_type='subject.language').facet('e_data')
+        # context['languages'] = langs.facet_counts()['fields']['e_data']
+        language_codes = MetadataElement.objects.filter(element_type__contains='subject.language').values(
+            'element_data').annotate(hits=Count('element_data')).order_by('-hits')
+        for i in language_codes:
+            i['print_name'] = SearchQuerySet().filter(code=i['element_data'])
 
-
+        context['languages'] = language_codes
         # contributors = json.loads(repo_cache.contributor_list)
         # context['contributors'] = sorted(contributors.items(), key=operator.itemgetter(1), reverse=True)
 
-        contribs = SearchQuerySet().filter(e_type__contains='contributor').facet('e_data')
-        context['contributors'] = contribs.facet_counts()['fields']['e_data']
-
+        context['contributors'] = MetadataElement.objects.filter(element_type__contains='contributor').values(
+            'element_data').annotate(hits=Count('element_data')).order_by('-hits')
+        # contribs = SearchQuerySet().filter(e_type__contains='contributor').facet('e_data')
+        # context['contributors'] = contribs.facet_counts()['fields']['e_data']
 
         # Create collections list
-        collections = [(i, i.count_records()) for i in Collection.objects.all()]
-        context['collections'] = sorted(collections, key=operator.itemgetter(1), reverse=True)
+        collections = [(i, i.count_records())
+                       for i in Collection.objects.all()]
+        context['collections'] = sorted(
+            collections, key=operator.itemgetter(1), reverse=True)
         return context
+
 
 class RepositoryView(RepositoryInfoMixin, DetailView):
     model = Repository
@@ -52,6 +63,7 @@ class RepositoryView(RepositoryInfoMixin, DetailView):
         context = super(RepositoryView, self).get_context_data(**kwargs)
         context['info'] = self.get_object().as_dict()
         return context
+
 
 class RepositoryCreateView(CreateView):
     model = Repository
@@ -63,11 +75,11 @@ class RepositoryCreateView(CreateView):
         context['existing_repositories'] = Repository.objects.all()
         return context
 
+
 class RepositoryResetView(TemplateView):
     template_name = 'olac_repository_manage.html'
 
     def dispatch(self, request, *args, **kwargs):
-
 
         MetadataElement.objects.all().delete()
         ArchiveMetadataElement.objects.all().delete()
@@ -93,9 +105,11 @@ class RepositoryHarvestUpdateView(RepositoryInfoMixin, UpdateView):
         initial['last_harvest'] = datetime.date.today()
         return initial
 
+
 class CollectionListView(RepositoryInfoMixin, ListView):
     model = Collection
     template_name = 'collection_list.html'
+
 
 class CollectionView(MapDataMixin, RepositoryInfoMixin, DetailView):
     model = Collection
@@ -106,7 +120,8 @@ class CollectionView(MapDataMixin, RepositoryInfoMixin, DetailView):
         context = super(CollectionView, self).get_context_data(**kwargs)
         curr_collection = self.get_object()
 
-        self.queryset = SearchQuerySet().filter(collection=curr_collection.name)
+        self.queryset = SearchQuerySet().filter(
+            collection=curr_collection.name)
 
         """ Building collection and record presentation data here rather than in template."""
         collection_dict = curr_collection.as_dict()
@@ -123,18 +138,19 @@ class CollectionView(MapDataMixin, RepositoryInfoMixin, DetailView):
         pager = []
         for i in self.queryset:
             r = {}
-            r['page'] = len(pager)+1
+            r['page'] = len(pager) + 1
             r['title'] = i.object.get_title()
             r['url'] = i.object.get_absolute_url()
             r['languages'] = i.object.list_subject_languages_as_tuples()
-            r['description'] = i.object.get_metadata_item('description')[0].element_data
+            r['description'] = i.object.get_metadata_item(
+                'description')[0].element_data
             records.append(r)
             page = page + 1
             if page % 10 == 0:
-                pager.append(len(pager)+1)
+                pager.append(len(pager) + 1)
 
         if page % 10 > 0:
-            pager.append(len(pager)+1)
+            pager.append(len(pager) + 1)
 
         context['collection_info'] = collection_dict
         context['records'] = records
@@ -142,6 +158,7 @@ class CollectionView(MapDataMixin, RepositoryInfoMixin, DetailView):
         context['collection_languages'] = collection_languages
         context['size'] = self.queryset.count()
         return context
+
 
 class CollectionsUpdateView(RepositoryInfoMixin, UpdateView):
     model = Repository
@@ -159,6 +176,7 @@ class CollectionsUpdateView(RepositoryInfoMixin, UpdateView):
         context = super(CollectionsUpdateView, self).get_context_data(**kwargs)
         context['collection_list'] = Collection.objects.all()
         return context
+
 
 class ItemView(MapDataMixin, RepositoryInfoMixin, DetailView):
     model = Record
@@ -188,11 +206,43 @@ class LanguageView(MapDataMixin, RepositoryInfoMixin, ListView):
         context = super(LanguageView, self).get_context_data(**kwargs)
         query = self.kwargs['query']
 
-        self.queryset = SearchQuerySet().filter(e_type='language.language').filter(e_data=query)
+        self.queryset = SearchQuerySet().filter(
+            e_type='subject.language').filter(e_data=query).facet('e_type')
 
-        context['records'] = self.queryset
+        language_name = ISOLanguageNameIndex.objects.filter(code=query)
+        if language_name:
+            language_name = language_name[0].print_name
+
+        records = []
+        collection_filters = set()
+        page = 0
+        pager = []
+        """ Building presentation data here rather than in template. Iterating over MetadataElement in search results."""
+        for i in self.queryset:
+            r = {}
+            r['page'] = len(pager) + 1
+            r['element_type'] = i.e_type
+            r['collection'] = i.object.record.set_spec
+            collection_filters.add(r['collection'])
+            r['title'] = i.object.record.get_title()
+            r['url'] = i.object.record.get_absolute_url()
+            r['languages'] = i.object.record.list_subject_languages_as_tuples()
+            r['description'] = i.object.record.get_metadata_item(
+                'description')[0].element_data
+            records.append(r)
+            page = page + 1
+            if page % 10 == 0:
+                pager.append(len(pager) + 1)
+
+        if page % 10 > 0:
+            pager.append(len(pager) + 1)
+
+        context['records'] = records
+        context['pager'] = pager
+        context['collection_filters'] = list(collection_filters)
         context['size'] = self.queryset.count()
-        context['object'] = query + ' language'
+        context['facets'] = self.queryset.facet_counts()['fields']['e_type']
+        context['page_title'] = language_name + ' (' + query + ') ' + ' language'
         return context
 
 
@@ -203,11 +253,36 @@ class ContributorView(MapDataMixin, RepositoryInfoMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(ContributorView, self).get_context_data(**kwargs)
         query = self.kwargs['query']
-        self.queryset = SearchQuerySet().filter(e_data=query)
+        query = query.replace('-', ' ')  # unslugify
+        self.queryset = SearchQuerySet().filter(e_type__startswith='contributor').filter(e_data=query).facet('e_type')
 
-        context['records'] = self.queryset
+        records = []
+        page = 0
+        pager = []
+        """ Building presentation data here rather than in template. Iterating over MetadataElement in search results."""
+        for i in self.queryset:
+            r = {}
+            r['page'] = len(pager) + 1
+            r['element_type'] = i.e_type
+
+            r['title'] = i.object.record.get_title()
+            r['url'] = i.object.record.get_absolute_url()
+            r['languages'] = i.object.record.list_subject_languages_as_tuples()
+            r['description'] = i.object.record.get_metadata_item(
+                'description')[0].element_data
+            records.append(r)
+            page = page + 1
+            if page % 10 == 0:
+                pager.append(len(pager) + 1)
+
+        if page % 10 > 0:
+            pager.append(len(pager) + 1)
+
+        context['records'] = records
+        context['pager'] = pager
         context['size'] = self.queryset.count()
-        context['object'] = query
+        context['facets'] = self.queryset.facet_counts()['fields']['e_type']
+        context['page_title'] = query
         return context
 
 
@@ -216,10 +291,10 @@ class SearchView(RepositoryInfoMixin, ListView):
 #     template_name = 'search.html'
 
 #     def post(self, request, *args, **kwargs):
-#         # arrays to hold values
+# arrays to hold values
 #         self.items = []
 
-#         # Grab POST values from the search query
+# Grab POST values from the search query
 #         self.query = self.request.POST.get('query')
 #         self.key = self.request.POST.get('key')
 
@@ -244,10 +319,3 @@ class SearchPage(RecordSearchMixin, ListView):
     pass
 #     model = Record
 #     template_name = 'searchtest.html'
-
-
-
-
-
-
-

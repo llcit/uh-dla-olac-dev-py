@@ -65,7 +65,7 @@
 							<dl>
                                 <dt>
                                     <a href="{{ i.url }}" >{{i.title}}</a>
-                                    {% for lang in i.languages %} <span class="language_label label label-default">{{ lang.name }}</span> {% endfor %}
+                                    {% for lang in i.languages %} <a href="{% url 'language' lang.code %}"><span class="language_label label label-default">{{ lang.name }}</span></a> {% endfor %}
                                     <span>{{i.description}}</span>
                                 </dt>
                             </dl>

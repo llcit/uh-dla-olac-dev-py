@@ -37,11 +37,20 @@ ul {
   padding: 6px;
 }
 
+.title_label {
+    font-size: 1.1em;
+    padding: 0 4px 0 4px;
+}
+
 .language_label {
-   padding: 0 4px 0 4px;
+    font-size: 0.9em;
+    color: white;
+    background-color: #6E8C6E;
+    padding: 0 5px 0 5px;
 }
 
 .filter_selected {
+  /*color: white;*/
   background-color: #6E8C6E;
 }
 

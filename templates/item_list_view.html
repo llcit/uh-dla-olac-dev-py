@@ -3,12 +3,17 @@
 {% load staticfiles %}
 
 
-{% block page_header %}<span class="small">back to <a href="{% url 'home' %}">Kaipuleohone</a> </span> <br> {{ object }}{% endblock page_header %}
+{% block page_header %}
+    <span class="small">back to <a href="{% url 'home' %}">Kaipuleohone</a> </span>
+    <br>
+    {{ page_title|title }}
+{% endblock page_header %}
 
-{% block content %}	
+{% block content %}
 
 	<div class="row">
-		<!-- Google Map display panel -->
+		<!-- Left panel: Google Map display panel and collection info -->
+
 		<div class="col-md-6">
 			<div class="row"><div id="map-canvas" style="width: 100%"></div></div>
 			<div class="row"><div class="col-md-12">
@@ -24,52 +29,82 @@
 			</div></div>
 		</div>
 
-		<!-- Google Map view controller -->
+		<!-- Right panel: Filter controllers (using Isotope library) -->
+
 		<div id="mapped_record_selector" class="col-md-6">
 			<legend>{{ records|length }} Records </legend>
 
-			<div class="row ">
-				<!-- Page filters -->
-				<div class="col-md-12">
-					<div class="col-md-2">Page</div>
-					<div class="col-md-10">
-						{% for i in pager %}
-							<div class="page_filter_selector btn" name="page {{ i }}" data-filter=".page_{{ i }}">{{ i }}</div>
-						{% endfor %}
-						<div class="page_filter_selector btn" name="all" data-filter="*">All</div>
-					</div>
-				</div>
+            <div class="row ">
+                <!-- Page filters -->
+                <div class="col-md-12 clearfix">
+                    <div class="pull-left">
+                        Filter by page <i class="fa fa-arrow-right"></i>
+                        {% for i in pager %}
+                            <div class="page_filter_selector btn btn-default btn-xs" name="page {{ i }}" data-filter=".page_{{ i }}">{{ i }}</div>
+                        {% endfor %}
+                        <div class="page_filter_selector btn btn-default btn-xs" name="all" data-filter=".record_item">All</div>
+                    </div>
+                </div>
 
-				<!-- Language filters -->
-				{% if collection_info.languages|length > 1 %}
-				<div class="col-md-12">
-					<div class="col-md-2">Languages</div>
-					<div class="col-md-10">
-						{% for i in collection_info.languages %}
-							<div class="page_filter_selector btn" name="language {{ i }}" data-filter=".{{ i }}">{{ i }}</div>
-						{% endfor %}
-						<div class="page_filter_selector btn" name="all" data-filter="*">All</div>
-					</div>
-				</div>
-				{% endif %}
-				
-				<div class="col-md-12 small" style="text-align: right; padding: 1.0em">Showing <span id="curr_page_filter">1</span>.</div>
+                <!-- Language filters -->
+                {% if collection_languages %}
+                <div class="col-md-12 clearfix">
+                    <div class="pull-left">
+                        Filter by language <i class="fa fa-arrow-right"></i>
+                        {% for i in collection_languages %}
+                            <div class="record_filter_selector btn btn-default btn-xs" name="language {{ i.name }}" data-filter=".{{ i.code }}">{{ i.name }}</div>
+                        {% endfor %}
 
-				<!-- Record list -->
-				<div class="col-md-12 ">
-					<dl class="dl-horizontal">
-					{% for i in records %}
-						<div class=""> 						
-							<dt><a href="{{ i.record.get_absolute_url }}"> {{ i.record }}</a></dt>
-							<dd>{{ i.record.get_title.0.element_data }}</dd> 
-							<hr>
-						</div>	
-						
-					{% endfor %}
-					</dl>
-				</div>
-			</div>		
-					
+                        <div class="record_filter_selector btn btn-default btn-xs" name="all" data-filter=".record_item">All</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Collection filters -->
+                {% if collection_filters|length > 1 %}
+                <div class="col-md-12 clearfix">
+                    <div class="pull-left">
+                        Filter by collection <i class="fa fa-arrow-right"></i>
+                        {% for i in collection_filters %}
+                            <div class="record_filter_selector btn btn-default btn-xs" name="collection {{ i }}" data-filter=".{{ i|slugify }}">{{ i }}</div>
+                        {% endfor %}
+
+                        <div class="record_filter_selector btn btn-default btn-xs" name="all" data-filter=".record_item">All</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Facet filters -->
+                {% if facets|length > 1 %}
+                <div class="col-md-12 clearfix">
+                    <div class="pull-left">
+                        Filter by metadata type <i class="fa fa-arrow-right"></i>
+                        {% for i in facets %}
+                            <div class="record_filter_selector btn btn-default btn-xs" name="facet {{ i.0 }}" data-filter=".{{ i.0|slugify }}">{{ i.0 }} ({{ i.1 }})</div>
+                        {% endfor %}
+                    </div>
+                    <div class="record_filter_selector btn btn-default btn-xs" name="all" data-filter=".record_item">All</div>
+                </div>
+                {% endif %}
+
+                <div class="col-md-12 clearfix" style="text-align: left; padding: 1.0em">Showing <span id="curr_page_filter"> page 1 (10</span> of {{ records|length }} records).</div>
+
+                <!-- Record list -->
+                <div class="col-md-12 filter_container">
+                    {% for i in records %}
+                        <div class="record_item page_{{i.page}} {{ i.collection|slugify }} {{i.element_type|slugify}} {% for lang in i.languages %} {{ lang.code }} {% endfor %}">
+                            <dl>
+                                <dt><p>
+                                    <a href="{{ i.url }}" ><span class="title_label label label-primary">{{i.title}}</span></a>
+                                    {% for lang in i.languages %} <a href="{% url 'language' lang.code %}"><span class="language_label label label-default">{{ lang.name }}</span></a> {% endfor %}
+                                    <span>{{i.description}}</span>
+                                </p></dt>
+                            </dl>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
 		</div>
 	</div>
 
@@ -85,12 +120,12 @@
 			        minZoom:1,
 			        center: {lat: parseFloat(json[0].north), lng: parseFloat(json[0].east)}, // Center to first plot in list
 			        mapTypeId: google.maps.MapTypeId.HYBRID
-			};        	
+			};
         }
     </script>
 {% endblock js_script %}
 
-{% block js_include %} 
+{% block js_include %}
   <!--Google Map js libraries-->
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
   <!-- // <script type="text/javascript" src="https://www.google.com/jsapi"></script> -->
