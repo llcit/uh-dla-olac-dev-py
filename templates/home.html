@@ -34,29 +34,31 @@
 			<!-- Mapped collection selector: displays infowindow for a selected collection in google map -->
 			<div class="map_filter_container mapped_collection">
 
-				{% for i in mapped_collections %}
-			 		<div class="mapped_collection_selector
-			 			{% for j in i.map_plots %}
-			 				coord{{ j.north|cut:'.'|slice:":6" }}_{{ j.east|cut:'.'|slice:":6" }}
+				{% for i in mapped_collections.items %}
+
+                    <div class="mapped_collection_selector btn btn-default
+
+			 			{% for j in i.1.plots %}
+                            coord{{ j.north|cut:'.'|slice:":6" }}_{{ j.east|cut:'.'|slice:":6" }}
 			 			{% endfor %}
 			 			{% for j in i.languages %}
 			 				{{ j }}
 			 			{% endfor %}
 			 		">
-			 			{{ i.name }}
+			 			{{ i.1.name }}
 						<input class="title" type="hidden" name="title" value="{{ i.name }}">
 						<input class="language" type="hidden" name="language" value="
 							{% for j in i.languages %} {{ j }} {% endfor %}
 						">
 						<input class="latitude" type="hidden" name="latitude" value="
-							{% for j in i.map_plots %} {{ j.north }} {% endfor %}
+							{% for j in i.1.plots %} {{ j.north }} {% endfor %}
 						">
 						<input class="longitude" type="hidden" name="longitude" value="
-							{% for j in i.map_plots %} {{ j.east }} {% endfor %}
+							{% for j in i.1.plots %} {{ j.east }} {% endfor %}
 						">
-						<input class="collection" type="hidden" name="collection" value="{{ i.name }}">
+						<input class="collection" type="hidden" name="collection" value="{{ i.1.name }}">
 
-						<input class="site_url" type="hidden" name="site_url" value="{{ i.site_url }}">
+						<input class="site_url" type="hidden" name="site_url" value="{{ i.1.url }}">
 			 		</div>
 				{% endfor %}
 			</div>
@@ -156,6 +158,7 @@
 {% block js_script %}
 	<script type="text/javascript">
 		//Get the coordinates info and data from the records inside the DOM
+
         var json = {{ mapped_plots|safe }};
         if(json.length > 0){
 	 		var mapOptions = {

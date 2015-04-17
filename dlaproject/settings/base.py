@@ -1,5 +1,5 @@
 """
-Django settings for dlaproject harvester project site. 
+Django settings for dlaproject harvester project site.
 Harvesting OLAC static-repositories.
 """
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -87,6 +87,8 @@ HAYSTACK_CONNECTIONS = {
 }
 
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 1000
+
+BITSTREAM_ROOT = 'scholarspace.manoa.hawaii.edu/bitstream/handle'
 
 
 

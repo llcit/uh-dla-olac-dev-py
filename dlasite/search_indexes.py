@@ -39,6 +39,7 @@ class RecordIndex(indexes.SearchIndex, indexes.Indexable):
 
 class MetadataElementIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
+    coll = indexes.CharField(model_attr='record__set_spec__name')
     record = indexes.CharField(model_attr='record')
     e_type = indexes.CharField(model_attr='element_type', faceted=True)
     e_data = indexes.CharField(model_attr='element_data', null=True)

@@ -1,13 +1,15 @@
+import datetime
+import json
+import operator
+from collections import Counter, namedtuple
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView, TemplateView, ListView, DetailView, CreateView, UpdateView
 from django.template import RequestContext
 from django.http import HttpResponse, Http404
 from django.db.models import Q, Count
-from collections import Counter, namedtuple
-import datetime
-import json
-import operator
+from django.conf import settings
 
 from haystack.query import SearchQuerySet
 
@@ -24,32 +26,20 @@ class HomeView(MapDataMixin, RepositoryInfoMixin, TemplateView):
         # Map mixin needs queryset variable set.
 
         context = super(HomeView, self).get_context_data(**kwargs)
-        repo_cache = RepositoryCache.objects.all()[0]
+        # repo_cache = RepositoryCache.objects.all()[0]
 
-        # languages = json.loads(repo_cache.language_list)
-        # context['languages'] = sorted(languages.items(), key=operator.itemgetter(1), reverse=True)
-
-        # Create language list using haystack.
-        # langs = SearchQuerySet().filter(
-        #     e_type='subject.language').facet('e_data')
-        # context['languages'] = langs.facet_counts()['fields']['e_data']
         language_codes = MetadataElement.objects.filter(element_type__contains='subject.language').values(
             'element_data').annotate(hits=Count('element_data')).order_by('-hits')
         for i in language_codes:
             i['print_name'] = SearchQuerySet().filter(code=i['element_data'])
 
         context['languages'] = language_codes
-        # contributors = json.loads(repo_cache.contributor_list)
-        # context['contributors'] = sorted(contributors.items(), key=operator.itemgetter(1), reverse=True)
 
         context['contributors'] = MetadataElement.objects.filter(element_type__contains='contributor').values(
             'element_data').annotate(hits=Count('element_data')).order_by('-hits')
-        # contribs = SearchQuerySet().filter(e_type__contains='contributor').facet('e_data')
-        # context['contributors'] = contribs.facet_counts()['fields']['e_data']
 
         # Create collections list
-        collections = [(i, i.count_records())
-                       for i in Collection.objects.all()]
+        collections = [(i, i.count_records()) for i in Collection.objects.all()]
         context['collections'] = sorted(
             collections, key=operator.itemgetter(1), reverse=True)
         return context
@@ -194,7 +184,15 @@ class ItemView(MapDataMixin, RepositoryInfoMixin, DetailView):
                 pass
 
         context['collection_info'] = d
-        context['item_data'] = self.get_object().as_dict()
+
+        item_info = self.get_object().as_dict()
+
+        for i, v in enumerate(item_info['tableOfContents']):
+            filename = item_info['tableOfContents'][i]
+            rooturl = item_info['identifier_uri_'][0].replace('hdl.handle.net', settings.BITSTREAM_ROOT)
+            item_info['tableOfContents'][i] = '<a href="' + rooturl + '/' + filename + '">' + filename + '</a>'
+
+        context['item_data'] = item_info
         return context
 
 
@@ -206,8 +204,11 @@ class LanguageView(MapDataMixin, RepositoryInfoMixin, ListView):
         context = super(LanguageView, self).get_context_data(**kwargs)
         query = self.kwargs['query']
 
-        self.queryset = SearchQuerySet().filter(
-            e_type='subject.language').filter(e_data=query).facet('e_type')
+        try:
+            self.queryset = SearchQuerySet().filter(
+                e_type='subject.language').filter(e_data=query).facet('e_type')
+        except Exception as e:
+            print e
 
         language_name = ISOLanguageNameIndex.objects.filter(code=query)
         if language_name:
@@ -222,7 +223,7 @@ class LanguageView(MapDataMixin, RepositoryInfoMixin, ListView):
             r = {}
             r['page'] = len(pager) + 1
             r['element_type'] = i.e_type
-            r['collection'] = i.object.record.set_spec
+            r['collection'] = i.object.coll
             collection_filters.add(r['collection'])
             r['title'] = i.object.record.get_title()
             r['url'] = i.object.record.get_absolute_url()

@@ -30,7 +30,7 @@ jQuery(function($) {
 		              position: mapPlots[i],
 		              map: map,
 		        });
-		        
+
 		        // Set up event listener for markers: when clicked will filter mapped records list.
 		        google.maps.event.addListener(marker, 'click', function() {
 		            map.setZoom(12);
@@ -39,11 +39,11 @@ jQuery(function($) {
 		            // normalize the position strings with the dom class string specified in mapped objects.
 		            var latstr = String(this.getPosition().lat()).replace('.', '').slice(0,6);
 		            var lngstr = String(this.getPosition().lng()).replace('.', '').slice(0,6);
-		            
+
 		            // build string used to select relevant classes from mapped collections list
 		            var map_filter = ".coord"+latstr +"_"+lngstr;
 
-		            
+
 		            // Trigger the filter (isotope) code : see dla.js
 		            if($(map_filter).length) {
 		            	$(map_filter).click();
@@ -53,21 +53,21 @@ jQuery(function($) {
 			            var collection_name = $(map_filter).first().children(".collection").val();
 			            var collection_url = $(map_filter).first().children(".site_url").val();
 			            var languages = $(map_filter).first().children(".language").val();
-			            var display_text = '<p><b>Collection: </b><a href=\"' + collection_url + '\">' + collection_name + '</a>' + '<br><b>Language: </b> ' + languages + '<br><b>Coordinates: </b><br>Latitude: ' + this.getPosition().lat() + ', Longitude: ' + this.getPosition().lng() + '</p>';
+			            var display_text = '<p><b>Collection: </b><a href=\"' + collection_url + '\">' + collection_name + '</a>' + '<br><b>Coordinates: </b><br>Latitude: ' + this.getPosition().lat() + ', Longitude: ' + this.getPosition().lng() + '</p>';
 
-			            
+
 			            var infowindowOptions = {
 			                content: display_text,
 			                position: this.getPosition(),
 			                maxWidth: 200
-			            };                    
+			            };
 			            infowindow.setOptions(infowindowOptions);
-			            infowindow.open(map);		            	
+			            infowindow.open(map);
 		            }
-		           	
-		        });	               
+
+		        });
 		    }
-		         
+
 		    infowindow = new google.maps.InfoWindow();
 
 		    // set up infowindow to modify dom relevant dom elements when close button is clicked.
@@ -82,7 +82,7 @@ jQuery(function($) {
 		if (json.length < 1){
             $("#map-canvas").toggle();
             $("#nogeotext").toggle();
-            $("#mapped_collection_selector").toggle();       
+            $("#mapped_collection_selector").toggle();
         } else {
 	        initialize_map();
 		}

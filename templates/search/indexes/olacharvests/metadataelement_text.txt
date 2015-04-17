@@ -1,6 +1,6 @@
-{{ object.record.set_spec.name }}
+{{ object.coll }}
 {{ object.record }}
 {{ object.record.list_subject_languages_as_tuples }}
-{{ object.element_type }}
-{{ object.element_data }}
+{{ object.e_type }}
+{{ object.e_data }}
 
