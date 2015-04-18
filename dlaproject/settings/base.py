@@ -1,6 +1,9 @@
 """
 Django settings for dlaproject harvester project site.
 Harvesting OLAC static-repositories.
+OLAC REQUEST URL: http://scholarspace.manoa.hawaii.edu/Kaipuleohone.xml
+OAI REQUEST/BASE URL:  https://scholarspace.manoa.hawaii.edu/dspace-oai/request
+
 """
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os

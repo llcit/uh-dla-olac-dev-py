@@ -26,7 +26,7 @@ for i in s:
     try:
         colls[coll_key]
     except:
-        colls[coll_key] = []
+        colls[coll_key] = {}
         colls[coll_key]['plots'] = []
     colls[coll_key]['name'] = coll_nam
     colls[coll_key]['plots'].append(coll_plot)

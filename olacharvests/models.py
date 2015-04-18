@@ -81,9 +81,9 @@ class Collection(TimeStampedModel):
     """
 
     identifier = models.CharField(max_length=256, unique=True)
-    name = models.CharField(max_length=256, null=True, blank=True)
+    name = models.CharField(max_length=512, null=True, blank=True)
     repository = models.ForeignKey(Repository, null=True, blank=True)
-    slug = models.SlugField(null=True)
+    slug = models.SlugField(max_length=512, null=True)
 
     def save(self, *args, **kwargs):
         if self.name:

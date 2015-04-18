@@ -109,9 +109,7 @@ class CollectionView(MapDataMixin, RepositoryInfoMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(CollectionView, self).get_context_data(**kwargs)
         curr_collection = self.get_object()
-
-        self.queryset = SearchQuerySet().filter(
-            collection=curr_collection.name)
+        records_queryset = curr_collection.record_set.all()
 
         """ Building collection and record presentation data here rather than in template."""
         collection_dict = curr_collection.as_dict()
@@ -121,19 +119,19 @@ class CollectionView(MapDataMixin, RepositoryInfoMixin, DetailView):
             except:
                 collection_dict[k] = v[0]
                 pass
-
         collection_languages = curr_collection.list_subject_languages_as_tuples()
         records = []
         page = 0
         pager = []
-        for i in self.queryset:
-            r = {}
+        for record in records_queryset:
+            data = record.data  # using related manager (related_name)
+            r = {}  # custom dictionary for the template
             r['page'] = len(pager) + 1
-            r['title'] = i.object.get_title()
-            r['url'] = i.object.get_absolute_url()
-            r['languages'] = i.object.list_subject_languages_as_tuples()
-            r['description'] = i.object.get_metadata_item(
-                'description')[0].element_data
+
+            r['title'] = data.filter(element_type='title').get().element_data   # i.object.get_title()
+            r['url'] = record.get_absolute_url()
+            r['languages'] = record.list_subject_languages_as_tuples()
+            r['description'] = [j.element_data for j in data.filter(element_type='description')]   # i.object.get_metadata_item('description')[0].element_data
             records.append(r)
             page = page + 1
             if page % 10 == 0:
@@ -146,7 +144,7 @@ class CollectionView(MapDataMixin, RepositoryInfoMixin, DetailView):
         context['records'] = records
         context['pager'] = pager
         context['collection_languages'] = collection_languages
-        context['size'] = self.queryset.count()
+        context['size'] = records_queryset.count()
         return context
 
 
@@ -223,7 +221,7 @@ class LanguageView(MapDataMixin, RepositoryInfoMixin, ListView):
             r = {}
             r['page'] = len(pager) + 1
             r['element_type'] = i.e_type
-            r['collection'] = i.object.coll
+            r['collection'] = i.coll
             collection_filters.add(r['collection'])
             r['title'] = i.object.record.get_title()
             r['url'] = i.object.record.get_absolute_url()

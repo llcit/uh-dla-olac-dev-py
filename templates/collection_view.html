@@ -11,10 +11,12 @@
 		<!-- Left panel: Google Map display panel and collection info -->
 
 		<div class="col-md-6">
-			<div class="row"><div id="map-canvas" style="width: 100%"></div></div>
-
+            <div class="row">
+                <div class="col-md-12"><p class="lead">Globe Trekker </p></div>
+                <div class="col-md-12" id="map-canvas" style="padding: 5px"></div>
+            </div>
             <div class="row"><div class="col-md-12">
-				<legend>About the Collection</legend>
+				<p class="lead">About the Collection</p>
 				<dl class="dl-horizontal">
 				{% for k, v in collection_info.items %}
 					{% if v %}
@@ -66,7 +68,7 @@
                                 <dt>
                                     <a href="{{ i.url }}" >{{i.title}}</a>
                                     {% for lang in i.languages %} <a href="{% url 'language' lang.code %}"><span class="language_label label label-default">{{ lang.name }}</span></a> {% endfor %}
-                                    <span>{{i.description}}</span>
+                                    <span>{% for i in i.description %} {{i}} {% endfor %}</span>
                                 </dt>
                             </dl>
 						</div>

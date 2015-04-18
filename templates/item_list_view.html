@@ -15,9 +15,13 @@
 		<!-- Left panel: Google Map display panel and collection info -->
 
 		<div class="col-md-6">
-			<div class="row"><div id="map-canvas" style="width: 100%"></div></div>
-			<div class="row"><div class="col-md-12">
-				<legend>About the Collection</legend>
+			<div class="row">
+                <div class="col-md-6"><p class="lead">Globe Trekker </p></div>
+                <div class="col-md-6" id="map-canvas"></div>
+            </div>
+
+            <div class="row"><div class="col-md-12">
+
 				<dl class="dl-horizontal">
 				{% for k, v in collection_info.items %}
 					{% if v %}
@@ -32,7 +36,7 @@
 		<!-- Right panel: Filter controllers (using Isotope library) -->
 
 		<div id="mapped_record_selector" class="col-md-6">
-			<legend>{{ records|length }} Records </legend>
+			<div class="row"><div class="col-md-12"><p class="lead">{{ records|length }} Records </p></div></div>
 
             <div class="row ">
                 <!-- Page filters -->
@@ -87,7 +91,7 @@
                 </div>
                 {% endif %}
 
-                <div class="col-md-12 clearfix" style="text-align: left; padding: 1.0em">Showing <span id="curr_page_filter"> page 1 (10</span> of {{ records|length }} records).</div>
+                <div class="col-md-12 clearfix" style="text-align: left; padding: 1.0em">Showing <em><span id="curr_page_filter"> page 1 (10</span></em> of {{ records|length }} records).</div>
 
                 <!-- Record list -->
                 <div class="col-md-12 filter_container">
