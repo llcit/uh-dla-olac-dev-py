@@ -14,7 +14,8 @@ from dlasite.views import (
     RepositoryView,
     RepositoryCreateView,
     RepositoryResetView,
-    RepositoryHarvestUpdateView
+    RepositoryHarvestUpdateView,
+    SearchHaystackView
 )
 
 # Experimenting with faceting
@@ -23,12 +24,12 @@ from haystack.query import SearchQuerySet
 from haystack.views import FacetedSearchView
 
 
-sqs = SearchQuerySet().facet('e_type')
+sqs = SearchQuerySet().facet('collection').facet('record').facet('element_type')
 
 urlpatterns = patterns('',
-    url(r'^search/$', FacetedSearchView(form_class=FacetedSearchForm, searchqueryset=SearchQuerySet().facet('e_type')), name='haystack_search'),
-
-    # url(r'^search/$', include('haystack.urls')),
+    url(r'^search/$', FacetedSearchView(form_class=FacetedSearchForm, searchqueryset=sqs), name='haystack_search'),
+    # url(r'^search/', SearchHaystackView.as_view(), name='search_haystack'),
+    # url(r'^search/', include('haystack.urls')),
 
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^repository/info/(?P<slug>[-\w]+)/$', RepositoryView.as_view(), name='olac_repository'),
@@ -46,7 +47,7 @@ urlpatterns = patterns('',
 
     url(r'^contributor/(?P<query>[-\w]+)$', ContributorView.as_view(), name='contributor'),
 
-    url(r'^search/$', SearchView.as_view(), name='search'),
+    # url(r'^search/$', SearchView.as_view(), name='search'),
     url(r'^searchtest/$', SearchPage.as_view(), name='searchtest'),
 
     url(r'^admin/', include(admin.site.urls)),

@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'haystack',
+    'crispy_forms',
 
     'olacharvests',
     'dlasite',
@@ -89,10 +90,10 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-HAYSTACK_SEARCH_RESULTS_PER_PAGE = 1000
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 20
 
 BITSTREAM_ROOT = 'scholarspace.manoa.hawaii.edu/bitstream/handle'
 
-
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 

@@ -1,5 +1,6 @@
-{{ object.coll }}
+{{ object.collection }}
 {{ object.record }}
-{{ object.e_type }}
-{{ object.e_data }}
+{{ object.record.get_absolute_url }}
+{{ object.element_type }}
+{{ object.element_data }}
 

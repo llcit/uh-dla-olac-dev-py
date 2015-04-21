@@ -12,6 +12,8 @@ from django.db.models import Q, Count
 from django.conf import settings
 
 from haystack.query import SearchQuerySet
+from haystack.forms import FacetedSearchForm
+from haystack.generic_views import SearchView, FacetedSearchView
 
 from olacharvests.models import Repository, Collection, Record, MetadataElement, ArchiveMetadataElement, ISOLanguageNameIndex
 from .mixins import RecordSearchMixin, MapDataMixin, RepositoryInfoMixin
@@ -19,8 +21,9 @@ from .models import RepositoryCache
 from .forms import CreateRepositoryForm, HarvestRepositoryForm, CollectionsUpdateForm
 
 
-class HomeView(MapDataMixin, RepositoryInfoMixin, TemplateView):
+class HomeView(MapDataMixin, RepositoryInfoMixin, SearchView):
     template_name = 'home.html'
+
 
     def get_context_data(self, **kwargs):
         # Map mixin needs queryset variable set.
@@ -283,6 +286,28 @@ class ContributorView(MapDataMixin, RepositoryInfoMixin, ListView):
         context['facets'] = self.queryset.facet_counts()['fields']['e_type']
         context['page_title'] = query
         return context
+
+# FacetedSearchView(form_class=FacetedSearchForm, searchqueryset=SearchQuerySet().facet('e_type'))
+sqs = SearchQuerySet().facet('collection').facet('record').facet('e_type')
+
+class SearchHaystackView(FacetedSearchView):
+    template_name = 'search/search.html'
+    # form_class = FacetedSearchForm
+    # queryset = sqs
+    # results = None
+
+    # def get_queryset(self):
+    #     queryset = super(SearchHaystackView, self).get_queryset()
+
+    #     self.results = queryset
+    #     print 'FACETS:', queryset.facet_counts()['fields']['collection']
+    #     return queryset
+
+    # def get_context_data(self, *args, **kwargs):
+    #     context = super(SearchHaystackView, self).get_context_data(*args, **kwargs)
+    #     print 'CONTEXT:', context['object_list']
+    #     return context
+
 
 
 class SearchView(RepositoryInfoMixin, ListView):
