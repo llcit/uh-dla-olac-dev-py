@@ -167,6 +167,13 @@ class Record(TimeStampedModel):
             title = ''
         return title
 
+    def get_description(self):
+        try:
+            desc = self.data.filter(element_type='description')[0].element_data
+        except:
+            desc = ''
+        return desc
+
     def remove_data(self):
         MetadataElement.objects.filter(record=self).delete()
         return

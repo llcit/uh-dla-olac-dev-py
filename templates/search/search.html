@@ -2,62 +2,93 @@
 {% load staticfiles %}
 
 {% block content %}
-    <h2>Kaipuleohone Search</h2>
 
-    <form action="." method="get">
-        <div class="input-group">
-            <input class="form-control" id="id_q" name="q" type="search">
-            <span class="input-group-btn"><button class="btn btn-default" type="submit">Go!</button></span>
-        </div>
-    </form>
+<div class="row">
+    <div class="col-md-6 col-md-offset-3 text-center">
+        <h2>Kaipuleohone Search</h2>
+        <form action="." method="get">
+
+            <div class="input-group">
+                {{ form.q }}
+                <!-- <p><input class="" id="id_q" name="q" type="search"></p> -->
+                <span class="input-group-btn"><button class="btn btn-success" type="submit">Search!</button></span>
+            </div>
+        </form>
+    </div>
+</div>
 
 {% if query %}
-    <!-- Begin faceting. -->
-    <h2>By Collection</h2>
+<div class="row">
+    <div class="col-md-3">
+        <!-- Begin faceting. -->
+        <h2>By Collection</h2>
 
-    <div>
-        <dl>
-            {% if facets.fields.collection %}
-                <dt>Collection</dt>
+        <div>
+            <dl>
+                {% if facets.fields.collection %}
+                    <dt>Collection</dt>
 
-                {% for collection in facets.fields.collection %}
-                    <dd><a href="{{ request.get_full_path }}&amp;selected_facets=collection_exact:{{ collection.0|urlencode }}">{{ collection.0 }}</a> ({{ collection.1 }})</dd>
-                {% endfor %}
-            {% else %}
-                <p>No collection facets.</p>
-            {% endif %}
-        </dl>
-    </div>
-
-    <h2>By Meta</h2>
-
-    <div>
-        <dl>
-
-            {% if facets.fields.element_type %}
-                <dt>Meta</dt>
-
-                {% for element_type in facets.fields.element_type %}
-                    <dd><a href="{{ request.get_full_path }}&amp;selected_facets=element_type_exact:{{ element_type.0|urlencode }}">{{ element_type.0 }}</a> ({{ element_type.1 }})</dd>
-                {% endfor %}
-            {% else %}
-                <p>No element_type facets.</p>
-            {% endif %}
-        </dl>
-    </div>
-
-    <!-- End faceting -->
-
-    <!-- Display results... -->
-    {% for result in page.object_list %}
-        <div class="search_result">
-            <h3><a href="{{ result.object.record.get_absolute_url }}">{{ result.record }}</a></h3>
-
-            <p>{{ result.object.record|truncatewords:80 }}</p>
+                    {% for collection in facets.fields.collection %}
+                        <dd><a href="{{ request.get_full_path }}&amp;selected_facets=collection_exact:{{ collection.0|urlencode }}">{{ collection.0 }}</a> ({{ collection.1 }})</dd>
+                    {% endfor %}
+                {% else %}
+                    <p>No collection facets.</p>
+                {% endif %}
+            </dl>
         </div>
-    {% empty %}
-        <p>Sorry, no results found.</p>
-    {% endfor %}
+
+        <h2>By Meta</h2>
+
+        <div>
+            <dl>
+
+                {% if facets.fields.element_type %}
+                    <dt>Meta</dt>
+
+                    {% for element_type in facets.fields.element_type %}
+                        <dd><a href="{{ request.get_full_path }}&amp;selected_facets=element_type_exact:{{ element_type.0|urlencode }}">{{ element_type.0 }}</a> ({{ element_type.1 }})</dd>
+                    {% endfor %}
+                {% else %}
+                    <p>No element_type facets.</p>
+                {% endif %}
+            </dl>
+        </div>
+
+        <!-- End faceting -->
+
+    </div>
+    <div class="col-md-9">
+        <!-- Display results... -->
+        <h2>Results</h2>
+
+        {% for result in page.object_list %}
+
+                <dl class="">
+                    <dt><a href="{{ result.object.record.get_absolute_url }}">
+                        <span>
+                            {{ result.record }}:
+
+                        </span>
+                    </a>
+                    <span>{{ result.object.record.get_description }}</span>
+                    </dt>
+
+                </dl>
+        {% empty %}
+            <p>Sorry, no results found.</p>
+        {% endfor %}
+
+
+    </div>
+</div>
 {% endif %}
 
 {% endblock %}
+
+{% block js_script %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#id_q").addClass("form-control");
+        });
+    </script>
+{% endblock js_script %}

@@ -207,7 +207,7 @@ class LanguageView(MapDataMixin, RepositoryInfoMixin, ListView):
 
         try:
             self.queryset = SearchQuerySet().filter(
-                e_type='subject.language').filter(e_data=query).facet('e_type')
+                element_type='subject.language').filter(element_data=query).facet('element_type')
         except Exception as e:
             print e
 
@@ -223,8 +223,8 @@ class LanguageView(MapDataMixin, RepositoryInfoMixin, ListView):
         for i in self.queryset:
             r = {}
             r['page'] = len(pager) + 1
-            r['element_type'] = i.e_type
-            r['collection'] = i.coll
+            r['element_type'] = i.element_type
+            r['collection'] = i.collection
             collection_filters.add(r['collection'])
             r['title'] = i.object.record.get_title()
             r['url'] = i.object.record.get_absolute_url()
@@ -243,7 +243,7 @@ class LanguageView(MapDataMixin, RepositoryInfoMixin, ListView):
         context['pager'] = pager
         context['collection_filters'] = list(collection_filters)
         context['size'] = self.queryset.count()
-        context['facets'] = self.queryset.facet_counts()['fields']['e_type']
+        context['facets'] = self.queryset.facet_counts()['fields']['element_type']
         context['page_title'] = language_name + ' (' + query + ') ' + ' language'
         return context
 
@@ -256,8 +256,9 @@ class ContributorView(MapDataMixin, RepositoryInfoMixin, ListView):
         context = super(ContributorView, self).get_context_data(**kwargs)
         query = self.kwargs['query']
         query = query.replace('-', ' ')  # unslugify
-        self.queryset = SearchQuerySet().filter(e_type__startswith='contributor').filter(e_data=query).facet('e_type')
+        self.queryset = SearchQuerySet().filter(element_type__startswith='contributor').filter(element_data=query).facet('element_type').facet('collection')
 
+        collection_filters = set()
         records = []
         page = 0
         pager = []
@@ -265,8 +266,9 @@ class ContributorView(MapDataMixin, RepositoryInfoMixin, ListView):
         for i in self.queryset:
             r = {}
             r['page'] = len(pager) + 1
-            r['element_type'] = i.e_type
-
+            r['element_type'] = i.element_type
+            r['collection'] = i.collection
+            collection_filters.add(r['collection'])
             r['title'] = i.object.record.get_title()
             r['url'] = i.object.record.get_absolute_url()
             r['languages'] = i.object.record.list_subject_languages_as_tuples()
@@ -283,12 +285,13 @@ class ContributorView(MapDataMixin, RepositoryInfoMixin, ListView):
         context['records'] = records
         context['pager'] = pager
         context['size'] = self.queryset.count()
-        context['facets'] = self.queryset.facet_counts()['fields']['e_type']
+        context['collection_filters'] = list(collection_filters)
+        context['facets'] = self.queryset.facet_counts()['fields']['element_type']
         context['page_title'] = query
         return context
 
 # FacetedSearchView(form_class=FacetedSearchForm, searchqueryset=SearchQuerySet().facet('e_type'))
-sqs = SearchQuerySet().facet('collection').facet('record').facet('e_type')
+sqs = SearchQuerySet().facet('collection').facet('record').facet('element_type')
 
 class SearchHaystackView(FacetedSearchView):
     template_name = 'search/search.html'
