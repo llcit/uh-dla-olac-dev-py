@@ -4,7 +4,7 @@ Unipath==1.0
 django-debug-toolbar==1.2.2
 -e git+https://github.com/toastdriven/django-haystack.git@b92e4ddc374439f4025f0f7ee6e0a4c5c488676f#egg=django_haystack-master
 django-model-utils==2.2
-ecdsa==0.11
+ecdsa==0.13.3
 elasticsearch==1.4.0
 lxml==3.4.2
 paramiko==1.15.1
