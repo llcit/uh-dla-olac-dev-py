@@ -12,5 +12,5 @@ psycopg2==2.5.4
 pycrypto==2.6.1
 pyoai==2.4.4
 sqlparse==0.1.13
-urllib3==1.10.2
+urllib3==1.26.5
 wsgiref==0.1.2
